@@ -1,7 +1,7 @@
 /**
  * Author: Jarid Bredemeier
  * Email: jpb64@nau.edu
- * Date: Thursday, October 6, 2016
+ * Date: Tuesday, September 20, 2016
  * File: main.c
  * Copyright © 2016 All rights reserved
  */
@@ -106,9 +106,11 @@ int main(int argc, char *argv[]){
 					
 					if(strcmp(objects[count].type, "sphere") == 0){
 						printf("Type: %s\n", objects[count].type);
-						printf("Radius: %lf\n", objects[count].properties.sphere.radius);
-						printf("Color: %lf %lf %lf\n", objects[count].properties.sphere.color[0], objects[count].properties.sphere.color[1], objects[count].properties.sphere.color[2]);
-						printf("Position: %lf %lf %lf\n\n", objects[count].properties.sphere.position[0], objects[count].properties.sphere.position[1], objects[count].properties.sphere.position[2]);
+						//printf("Color: %lf %lf %lf\n", objects[count].properties.sphere.color[0], objects[count].properties.sphere.color[1], objects[count].properties.sphere.color[2]);
+						printf("Position: %lf %lf %lf\n", objects[count].properties.sphere.position[0], objects[count].properties.sphere.position[1], objects[count].properties.sphere.position[2]);
+						printf("Diffuse Color: %lf %lf %lf\n", objects[count].properties.sphere.diffuse_color[0], objects[count].properties.sphere.diffuse_color[1], objects[count].properties.sphere.diffuse_color[2]);
+						printf("Specular Color: %lf %lf %lf\n", objects[count].properties.sphere.specular_color[0], objects[count].properties.sphere.specular_color[1], objects[count].properties.sphere.specular_color[2]);
+						printf("Radius: %lf\n\n", objects[count].properties.sphere.radius);
 						
 					}
 					
@@ -120,11 +122,23 @@ int main(int argc, char *argv[]){
 					
 					}
 					
+					if(strcmp(objects[count].type, "light") == 0){
+						printf("Type: %s\n", objects[count].type);
+						printf("Color: %lf %lf %lf\n", objects[count].properties.light.color[0], objects[count].properties.light.color[1], objects[count].properties.light.color[2]);
+						printf("Position: %lf %lf %lf\n", objects[count].properties.light.position[0], objects[count].properties.light.position[1], objects[count].properties.light.position[2]);
+						printf("Direction: %lf %lf %lf\n", objects[count].properties.light.direction[0], objects[count].properties.light.direction[1], objects[count].properties.light.direction[2]);
+						printf("Radial a0: %lf\n", objects[count].properties.light.radial_a0);
+						printf("Radial a1: %lf\n", objects[count].properties.light.radial_a1);
+						printf("Radial a2: %lf\n", objects[count].properties.light.radial_a2);
+						printf("Angular a0: %lf\n\n", objects[count].properties.light.angular_a0);						
+					
+					}					
+					
 				}
 				
 			}
 			// Raycast scene, write out to ppm6 image
-			write_p6_image(argv[4], raycaster(objects, ppm_image, num_objects));
+			//write_p6_image(argv[4], raycaster(objects, ppm_image, num_objects));
 			
 		}
 		

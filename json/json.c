@@ -1,7 +1,7 @@
 /**
  * Author: Jarid Bredemeier
  * Email: jpb64@nau.edu
- * Date: Thursday, October 6, 2016
+ * Date: Tuesday, September 20, 2016
  * File: json.c
  * Copyright © 2016 All rights reserved 
  */
@@ -278,8 +278,7 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 	skip_whitespace(fpointer);
 	token = get_char(fpointer);
 	
-	// Check to see of the first character is an opening
-	// brace denoting the start of a scene
+	// Check to see of the first character is an opening brace that denotes the start of a scene
 	if(token != '[') {
 		fprintf(stderr, "Error, line number %d; invalid scene definition '%c', expected character '%c'.\n", line_num, token, '[');
 		// Close file stream flush all buffers
@@ -288,21 +287,14 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 		
 	}
 	
+	// Skip whitespace(s), read in the next character and advance the stream position indicator
 	skip_whitespace(fpointer);
 	token = get_char(fpointer);
 		
-	// Check for an empty scene [no objects]
-	if(token != ']') {
-		ungetc(token, fpointer);
-		
-	}
-		
-	// Empty scene not detected, loop through the scene until a 
-	// closing brace is encountered
+	// Empty scene not detected! This is the Outter-Loop where we iteriate through a scene looking
+	// for object defintions until a closing ']' brace is encountered denoting the end of a scene
 	while(token != ']') {
-		skip_whitespace(fpointer);
-		token = get_char(fpointer);
-		
+
 		// Determine if the character read in is a valid begining of an object
 		if(token != '{') {
 			fprintf(stderr, "Error, line number %d; invalid object definition '%c', expected character '%c'.\n", line_num, token, '{');
@@ -312,10 +304,12 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 			
 		}
 		
+		// Skip whitespace(s), read in the next character and advance the stream position indicator
 		skip_whitespace(fpointer);
-		// Read in a character advance the stream position indicator
-		token = get_char(fpointer);	
+		token = get_char(fpointer);
 		
+		// Inner-Loop: Searching for name/value pairs within each object definition util object
+		// terminator has been reached
 		while(token != '}') {
 			// If the next character is a '"' which means a string move indicator back one position then read in the string
 			if(token == '"') {
@@ -326,8 +320,9 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 			name = get_string(fpointer);
 			
 			if(strcmp(name, "type") == 0){
+				// Skip whitespace(s), read in the next character
+				// and advance the stream position indicator
 				skip_whitespace(fpointer);
-				// Read in a character and advance the stream position indicator
 				token = get_char(fpointer);
 				
 				if(token != ':') {
@@ -360,8 +355,8 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 				}
 				
 			} else if(strcmp(name, "height") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
 				skip_whitespace(fpointer);
-				// Read in a character and advance the stream position indicator
 				token = get_char(fpointer);
 
 				if(token != ':') {
@@ -377,8 +372,8 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 				}
 				
 			} else if(strcmp(name, "radius") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
 				skip_whitespace(fpointer);
-				// Read in a character and advance the stream position indicator
 				token = get_char(fpointer);
 
 				if(token != ':') {
@@ -393,9 +388,119 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 					
 				}
 			
-			} else if(strcmp(name, "color") == 0) {
+			} else if(strcmp(name, "radial-a0") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
 				skip_whitespace(fpointer);
-				// Read in a character and advance the stream position indicator
+				token = get_char(fpointer);
+
+				if(token != ':') {
+					fprintf(stderr, "Error, line number %d; invalid separator '%c', expected character '%c'.\n", line_num, token, ':');
+					// Close file stream flush all buffers
+					fclose(fpointer);		
+					exit(-1);
+					
+				} else {
+					skip_whitespace(fpointer);
+					objects[index].properties.light.radial_a0 = get_double(fpointer);
+					
+				}
+			
+			} else if(strcmp(name, "radial-a1") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
+				skip_whitespace(fpointer);
+				token = get_char(fpointer);
+
+				if(token != ':') {
+					fprintf(stderr, "Error, line number %d; invalid separator '%c', expected character '%c'.\n", line_num, token, ':');
+					// Close file stream flush all buffers
+					fclose(fpointer);		
+					exit(-1);
+					
+				} else {
+					skip_whitespace(fpointer);
+					objects[index].properties.light.radial_a1 = get_double(fpointer);
+					
+				}
+			
+			} else if(strcmp(name, "radial-a2") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
+				skip_whitespace(fpointer);
+				token = get_char(fpointer);
+
+				if(token != ':') {
+					fprintf(stderr, "Error, line number %d; invalid separator '%c', expected character '%c'.\n", line_num, token, ':');
+					// Close file stream flush all buffers
+					fclose(fpointer);		
+					exit(-1);
+					
+				} else {
+					skip_whitespace(fpointer);
+					objects[index].properties.light.radial_a2 = get_double(fpointer);
+					
+				}
+			
+			} else if(strcmp(name, "angular-a0") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
+				skip_whitespace(fpointer);
+				token = get_char(fpointer);
+
+				if(token != ':') {
+					fprintf(stderr, "Error, line number %d; invalid separator '%c', expected character '%c'.\n", line_num, token, ':');
+					// Close file stream flush all buffers
+					fclose(fpointer);		
+					exit(-1);
+					
+				} else {
+					skip_whitespace(fpointer);
+					objects[index].properties.light.angular_a0 = get_double(fpointer);
+					
+				}
+			
+			} else if(strcmp(name, "diffuse_color") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
+				skip_whitespace(fpointer);
+				token = get_char(fpointer);
+
+				if(token != ':') {
+					fprintf(stderr, "Error, line number %d; unexpected character '%c', expected character '%c'.\n", line_num, token, ':');
+					// Close file stream flush all buffers
+					fclose(fpointer);		
+					exit(-1);
+					
+				} else {
+					skip_whitespace(fpointer);
+					vector = get_vector(fpointer);
+					
+					objects[index].properties.sphere.diffuse_color[0] = vector[0];
+					objects[index].properties.sphere.diffuse_color[1] = vector[1];
+					objects[index].properties.sphere.diffuse_color[2] = vector[2];
+					
+				}	 
+			   
+			} else if(strcmp(name, "specular_color") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
+				skip_whitespace(fpointer);
+				token = get_char(fpointer);
+
+				if(token != ':') {
+					fprintf(stderr, "Error, line number %d; unexpected character '%c', expected character '%c'.\n", line_num, token, ':');
+					// Close file stream flush all buffers
+					fclose(fpointer);		
+					exit(-1);
+					
+				} else {
+					skip_whitespace(fpointer);
+					vector = get_vector(fpointer);
+					
+					objects[index].properties.sphere.specular_color[0] = vector[0];
+					objects[index].properties.sphere.specular_color[1] = vector[1];
+					objects[index].properties.sphere.specular_color[2] = vector[2];
+					
+				}	 
+			   
+			} else if(strcmp(name, "color") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
+				skip_whitespace(fpointer);
 				token = get_char(fpointer);
 
 				if(token != ':') {
@@ -411,37 +516,34 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 					// Validates against object defintions without a type defined. That is all 
 					// objects and object properties associated to a type value of NULL are ignored
 					if(objects[index].type != NULL) {
-						if(strcmp(objects[index].type, "sphere") == 0) {
+						
+						if(strcmp(objects[index].type, "light") == 0) {
+							objects[index].properties.light.color[0] = vector[0];
+							objects[index].properties.light.color[1] = vector[1];
+							objects[index].properties.light.color[2] = vector[2];	
+						
+						} else {
 							// Check color tolerance range of 0 to 1.0
 							if(color_tolerance(vector) != 1) {
-								fprintf(stderr, "Error, invalid color tolerance in sphere color array.\n");
+								fprintf(stderr, "Error, invalid color tolerance in %s color array.\n", objects[index].type);
 								// Close file stream flush all buffers
 								fclose(fpointer);		
 								exit(-1);
 								
-							} else {
+							}
+							
+							if(strcmp(objects[index].type, "sphere") == 0) {
 								objects[index].properties.sphere.color[0] = vector[0];
 								objects[index].properties.sphere.color[1] = vector[1];
-								objects[index].properties.sphere.color[2] = vector[2];	
+								objects[index].properties.sphere.color[2] = vector[2];
 								
-							}
-								
-							
-						} else if(strcmp(objects[index].type, "plane") == 0) {
-							// Check color tolerance range of 0 to 1.0
-							if(color_tolerance(vector) != 1) {
-								fprintf(stderr, "Error, invalid color tolerance in plane color array.\n");
-								// Close file stream flush all buffers
-								fclose(fpointer);		
-								exit(-1);							
-								
-							} else {
+							} else if (strcmp(objects[index].type, "plane") == 0) {
 								objects[index].properties.plane.color[0] = vector[0];
 								objects[index].properties.plane.color[1] = vector[1];
 								objects[index].properties.plane.color[2] = vector[2];
 								
 							}
-			
+							
 						}
 						
 					}
@@ -449,8 +551,8 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 				}				
 				
 			} else if(strcmp(name, "position") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
 				skip_whitespace(fpointer);
-				// Read in a character and advance the stream position indicator
 				token = get_char(fpointer);
 
 				if(token != ':') {
@@ -476,6 +578,11 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 							objects[index].properties.plane.position[1] = vector[1];
 							objects[index].properties.plane.position[2] = vector[2];
 							
+						} else if(strcmp(objects[index].type, "light") == 0) {
+							objects[index].properties.light.position[0] = vector[0];
+							objects[index].properties.light.position[1] = vector[1];
+							objects[index].properties.light.position[2] = vector[2];
+							
 						}
 						
 					}
@@ -483,8 +590,8 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 				}				
 				
 			} else if(strcmp(name, "normal") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
 				skip_whitespace(fpointer);
-				// Read in a character and advance the stream position indicator
 				token = get_char(fpointer);
 
 				if(token != ':') {
@@ -503,6 +610,27 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 					
 				}	 
 			   
+			} else if(strcmp(name, "direction") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
+				skip_whitespace(fpointer);
+				token = get_char(fpointer);
+
+				if(token != ':') {
+					fprintf(stderr, "Error, line number %d; unexpected character '%c', expected character '%c'.\n", line_num, token, ':');
+					// Close file stream flush all buffers
+					fclose(fpointer);		
+					exit(-1);
+					
+				} else {
+					skip_whitespace(fpointer);
+					vector = get_vector(fpointer);
+					
+					objects[index].properties.light.direction[0] = vector[0];
+					objects[index].properties.light.direction[1] = vector[1];
+					objects[index].properties.light.direction[2] = vector[2];
+					
+				}	 
+			   
 			} else {
 				fprintf(stderr, "Error, line number %d; invalid type '%s'.\n", name);
 				// Close file stream flush all buffers
@@ -510,43 +638,34 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 				exit(-1);				
 			}
 			
+			// Skip whitespace(s), read in the next character and advance the stream position indicator
 			skip_whitespace(fpointer);
-			// Read in a character and advance the stream position indicator	
 			token = get_char(fpointer);
 			
 			if(token == ',') {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
 				skip_whitespace(fpointer);
-				// Read in a character and advance the stream position indicator
 				token = get_char(fpointer);
 				
 			}
 			
-		}  // EO While Loop
+		}  // End-of-While-Loop: Name:Value pairing
 		
+		// Skip whitespace(s), read in the next character and advance the stream position indicator
 		skip_whitespace(fpointer);
-		// Read in a character and advance the stream position indicator
 		token = get_char(fpointer);
-
-		if(token == '{') {
-			ungetc(token, fpointer);
-			
-		}
-
+		
 		if(token == ',') {
+			// Skip whitespace(s), read in the next character and advance the stream position indicator
 			skip_whitespace(fpointer);
-			// Read in a character and advance the stream position indicator
 			token = get_char(fpointer);
 			
-			if(token == '{') {
-				ungetc(token, fpointer);
-				
-			}				
-			
-		}			
-		// Increment array index counter
+		}
+		
+		// Increment object counter
 		index = index + 1;
 	
-	} // EO While Loop
+	} // End-of-While-Loop: Object defintions
 
 	// Return the total number of objects read-in from the scene
 	return index;
