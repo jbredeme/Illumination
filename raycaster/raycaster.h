@@ -1,7 +1,7 @@
 /**
  * Author: Jarid Bredemeier
  * Email: jpb64@nau.edu
- * Date: Tuesday, September 20, 2016
+ * Date: Thursday, October 6, 2016
  * File: raycaster.h
  * Copyright © 2016 All rights reserved 
  */

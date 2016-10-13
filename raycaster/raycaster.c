@@ -1,7 +1,7 @@
 /**
  * Author: Jarid Bredemeier
  * Email: jpb64@nau.edu
- * Date: Tuesday, September 20, 2016
+ * Date: Thursday, October 6, 2016
  * File: raycaster.c
  * Copyright © 2016 All rights reserved 
  */
@@ -14,6 +14,7 @@
 #include "..\ppm\ppm.h"
 #include "..\json\json.h"
 #include "raycaster.h"
+#include "..\math\vector_math.h"
 
 /**
  * sqr
@@ -41,6 +42,29 @@ static inline void normalize(double *v) {
 	v[1] /= len;
 	v[2] /= len;
 	
+}
+
+
+/**
+ * clamp
+ *
+ * @param 
+ * @param 
+ * @param 
+ * @returns double
+ * @description 
+ */
+double clamp(double number, double min, double max){
+	if(number > max) {
+		return max;
+		
+	} else if (number < min){
+		
+		return min;
+	} else {
+		
+		return number;
+	}
 }
 
 
@@ -178,7 +202,9 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 	double h, w;
 	double t, best_t;
 	double red, green, blue;
-	int row, column, index, t_object;
+	int row, column, index, closest_obj;
+	double ron[3]; // Ray Orgin New
+	double rdn[3]; // Ray Orgin Direction
 	double rd[3];
 
 	// Set ray orgin
@@ -225,20 +251,16 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 				if((objects[index].type) != NULL) {
 					if(strcmp((objects[index].type), "sphere") == 0){
 						t = sphere_intersection(ro, rd, objects[index].properties.sphere.position, objects[index].properties.sphere.radius);
-						//printf("Best t - sphere: %lf\n", t);
-						//printf("Position: %lf %lf %lf\n\n", objects[index].properties.sphere.position[0], objects[index].properties.sphere.position[1], objects[index].properties.sphere.position[2]);
 					
 					} else if(strcmp((objects[index].type), "plane") == 0) {
 						t = plane_intersection(ro, rd, objects[index].properties.plane.position, objects[index].properties.plane.normal);
-						//printf("Best t - plane: %lf\n", t);
-						//printf("Position: %lf %lf %lf\n\n", objects[index].properties.plane.position[0], objects[index].properties.plane.position[1], objects[index].properties.plane.position[2]);
 				
 					}
 					
 					// Get the best t value and object index
 					if ((t > 0) && (t < best_t)){
 						best_t = t;
-						t_object = index;
+						closest_obj = index;
 					
 					}
 					
@@ -249,27 +271,74 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 			
 			if((best_t > 0) && (best_t != INFINITY)){
 				
-				if(strcmp(objects[t_object].type, "sphere") == 0) {
-					red = objects[t_object].properties.sphere.color[0] * (image->max_color);
+				if(strcmp(objects[closest_obj].type, "sphere") == 0) {
+					
+					red = clamp(objects[closest_obj].properties.sphere.color[0], 0, 1.0) * (image->max_color);
 					image->image_data[(image->width) * row + column].red = red;
 					
-					green = objects[t_object].properties.sphere.color[1] * (image->max_color);
+					green = clamp(objects[closest_obj].properties.sphere.color[1], 0, 1.0) * (image->max_color);
 					image->image_data[(image->width) * row + column].green = green;
 					
-					blue = objects[t_object].properties.sphere.color[2] * (image->max_color);
+					blue = clamp(objects[closest_obj].properties.sphere.color[2], 0, 1.0) * (image->max_color);
 					image->image_data[(image->width) * row + column].blue = blue;
+					
+/* 					red = objects[closest_obj].properties.sphere.color[0] * (image->max_color);
+					image->image_data[(image->width) * row + column].red = red;
+					
+					green = objects[closest_obj].properties.sphere.color[1] * (image->max_color);
+					image->image_data[(image->width) * row + column].green = green;
+					
+					blue = objects[closest_obj].properties.sphere.color[2] * (image->max_color);
+					image->image_data[(image->width) * row + column].blue = blue; */
 				
-				} else if(strcmp(objects[t_object].type, "plane") == 0){
-					red = objects[t_object].properties.plane.color[0] * (image->max_color);
+				} else if(strcmp(objects[closest_obj].type, "plane") == 0){
+					red = clamp(objects[closest_obj].properties.plane.color[0], 0, 1.0) * (image->max_color);
 					image->image_data[(image->width) * row + column].red = red;
 					
-					green = objects[t_object].properties.plane.color[1] * (image->max_color);
+					green = clamp(objects[closest_obj].properties.plane.color[1], 0, 1.0) * (image->max_color);
 					image->image_data[(image->width) * row + column].green = green;
 					
-					blue = objects[t_object].properties.plane.color[2] * (image->max_color);
-					image->image_data[(image->width) * row + column].blue = blue;
+					blue = clamp(objects[closest_obj].properties.plane.color[2], 0, 1.0) * (image->max_color);
+					image->image_data[(image->width) * row + column].blue = blue;					
+					
+/* 					red = objects[closest_obj].properties.plane.color[0] * (image->max_color);
+					image->image_data[(image->width) * row + column].red = red;
+					
+					green = objects[closest_obj].properties.plane.color[1] * (image->max_color);
+					image->image_data[(image->width) * row + column].green = green;
+					
+					blue = objects[closest_obj].properties.plane.color[2] * (image->max_color);
+					image->image_data[(image->width) * row + column].blue = blue; */
 					
 				}
+				
+				// 1.) Iterate over lights
+				// 2.) Shadow test, where you do not apply the lights
+				// 3.) Can you see the light source?
+
+				// Iterate through the lights
+/* 				for(index = 0; index < num_objects; index++) {
+					if(strcmp(objects[index].type, "light") == 0) {
+						vector_scale(rd, best_t, ron);
+						vector_add(ron, ro, ron);
+						vector_subtract(objects[index].properties.light.position, ron, rdn);
+						
+						for(k = 0; k < num_objects; k++){
+							// Repeat intersection code test
+							// If best_t > distance to light, continue...
+							if(object[k] == closest_shadow_obj){
+								// continue..
+							}
+							
+						}
+						
+						if(closest_shadow_obj == null) {
+
+						}
+
+					}
+					
+				} */
 				
 			}
 			
