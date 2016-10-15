@@ -16,8 +16,7 @@
 #include "raycaster\raycaster.h"
 
 // Allocate object array, specifications do not support more then 128 objects in a scene
-Object objects[128];
-int maximum_color;
+Object objects[MAX_OBJECTS];
 
 /**
  * main
@@ -31,7 +30,6 @@ int main(int argc, char *argv[]){
 	FILE *fpointer;
 	int num_objects, count, index;
 	Image *ppm_image;
-	maximum_color = 255;
 	
 	// Allocate memory for Image
 	ppm_image = (Image *)malloc(sizeof(Image));
@@ -75,7 +73,7 @@ int main(int argc, char *argv[]){
 		// Set Image properties
 		ppm_image->width = atoi(argv[1]);
 		ppm_image->height = atoi(argv[2]);
-		ppm_image->max_color = maximum_color;
+		ppm_image->max_color = MAX_COLOR;
 		
 		// Allocate memory size for image data
 		ppm_image->image_data = malloc(sizeof(Pixel) * ppm_image->width * ppm_image->height);
@@ -118,6 +116,8 @@ int main(int argc, char *argv[]){
 						printf("Type: %s\n", objects[count].type);
 						printf("Color: %lf %lf %lf\n", objects[count].properties.plane.color[0], objects[count].properties.plane.color[1], objects[count].properties.plane.color[2]);
 						printf("Position: %lf %lf %lf\n", objects[count].properties.plane.position[0], objects[count].properties.plane.position[1], objects[count].properties.plane.position[2]);
+						printf("Diffuse Color: %lf %lf %lf\n", objects[count].properties.plane.diffuse_color[0], objects[count].properties.plane.diffuse_color[1], objects[count].properties.plane.diffuse_color[2]);
+						printf("Specular Color: %lf %lf %lf\n", objects[count].properties.plane.specular_color[0], objects[count].properties.plane.specular_color[1], objects[count].properties.plane.specular_color[2]);						
 						printf("Normal: %lf %lf %lf\n\n", objects[count].properties.plane.normal[0], objects[count].properties.plane.normal[1], objects[count].properties.plane.normal[2]);			
 					
 					}
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]){
 				
 			}
 			// Raycast scene, write out to ppm6 image
-			//write_p6_image(argv[4], raycaster(objects, ppm_image, num_objects));
+			write_p6_image(argv[4], raycaster(objects, ppm_image, num_objects));
 			
 		}
 		

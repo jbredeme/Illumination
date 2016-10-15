@@ -16,8 +16,6 @@
 int line_num;
 
 /**
- * get_char
- *
  * @param file pointer
  * @returns interger value of the ascii character read in
  * @description Reads in a character from an input stream, checks if the character is a newline, 
@@ -44,8 +42,6 @@ int get_char(FILE *fpointer) {
  
  
 /**
- * skip_whitespace
- *
  * @param file pointer
  * @returns void
  * @description Reads in a character from an input stream, checks if the character is a newline, 
@@ -66,8 +62,6 @@ void skip_whitespace(FILE *fpointer) {
 
  
 /**
- * get_string
- *
  * @param file pointer
  * @returns string of characters delimited by "... "
  * @description Reads in a stream of characters delimited by quotation marks. Validates against the existence
@@ -132,8 +126,6 @@ char *get_string(FILE *fpointer){
  
  
 /**
- * get_double
- *
  * @param file pointer
  * @returns double
  * @description Reads in a double precsion floating point number, if none are found throws error
@@ -157,8 +149,6 @@ double get_double(FILE *fpointer){
  
  
 /**
- * get_vector
- *
  * @param file pointer
  * @returns double[3]
  * @description Reads in an array with the format pattern [x, y, z] and parses into an array of	
@@ -231,8 +221,6 @@ double *get_vector(FILE *fpointer){
 
  
 /**
- * color_tolerance
- *
  * @param color_v - an array of 3 double precsion numbers 
  * @returns 0 if an element is not within the acceptable tolerances 0 to 1.0 and 1 otherwise
  * @description check if color value is within the acceptable tolerances 0 to 1.0
@@ -242,21 +230,18 @@ double *get_vector(FILE *fpointer){
 	 
 	for(index = 0; index < 3; index++) {
 		if((color_v[index] < 0) || (color_v[index] > 1.0)) {
-			
 			return (0);
 			
 		}
 
 	}
-	
+
 	return (1);
 	
  }
 
  
 /**
- * json_read_scene
- *
  * @param file pointer
  * @param array of Object
  * @returns integer number of item read-in
@@ -471,9 +456,32 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 					skip_whitespace(fpointer);
 					vector = get_vector(fpointer);
 					
-					objects[index].properties.sphere.diffuse_color[0] = vector[0];
-					objects[index].properties.sphere.diffuse_color[1] = vector[1];
-					objects[index].properties.sphere.diffuse_color[2] = vector[2];
+					// Validates against object defintions without a type defined. That is all 
+					// objects and object properties associated to a type value of NULL are ignored
+					if(objects[index].type != NULL) {
+
+						// Check color tolerance range of 0 to 1.0
+						if(color_tolerance(vector) != 1) {
+							fprintf(stderr, "Error, invalid color tolerance in %s color array.\n", objects[index].type);
+							// Close file stream flush all buffers
+							fclose(fpointer);		
+							exit(-1);
+							
+						}
+						
+						if(strcmp(objects[index].type, "sphere") == 0) {
+							objects[index].properties.sphere.diffuse_color[0] = vector[0];
+							objects[index].properties.sphere.diffuse_color[1] = vector[1];
+							objects[index].properties.sphere.diffuse_color[2] = vector[2];
+							
+						} else if (strcmp(objects[index].type, "plane") == 0) {
+							objects[index].properties.plane.diffuse_color[0] = vector[0];
+							objects[index].properties.plane.diffuse_color[1] = vector[1];
+							objects[index].properties.plane.diffuse_color[2] = vector[2];
+							
+						}
+						
+					}
 					
 				}	 
 			   
@@ -492,9 +500,32 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 					skip_whitespace(fpointer);
 					vector = get_vector(fpointer);
 					
-					objects[index].properties.sphere.specular_color[0] = vector[0];
-					objects[index].properties.sphere.specular_color[1] = vector[1];
-					objects[index].properties.sphere.specular_color[2] = vector[2];
+					// Validates against object defintions without a type defined. That is all 
+					// objects and object properties associated to a type value of NULL are ignored
+					if(objects[index].type != NULL) {
+
+						// Check color tolerance range of 0 to 1.0
+						if(color_tolerance(vector) != 1) {
+							fprintf(stderr, "Error, invalid color tolerance in %s color array.\n", objects[index].type);
+							// Close file stream flush all buffers
+							fclose(fpointer);		
+							exit(-1);
+							
+						}
+						
+						if(strcmp(objects[index].type, "sphere") == 0) {
+							objects[index].properties.sphere.specular_color[0] = vector[0];
+							objects[index].properties.sphere.specular_color[1] = vector[1];
+							objects[index].properties.sphere.specular_color[2] = vector[2];
+							
+						} else if (strcmp(objects[index].type, "plane") == 0) {
+							objects[index].properties.plane.specular_color[0] = vector[0];
+							objects[index].properties.plane.specular_color[1] = vector[1];
+							objects[index].properties.plane.specular_color[2] = vector[2];
+							
+						}
+						
+					}
 					
 				}	 
 			   

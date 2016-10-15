@@ -1,28 +1,35 @@
 [
 {
-"type": "camera"
-"width": 0.5,
-"height": 0.5
+	"type": "camera"
+	"width": 0.5,
+	"height": 0.5
 }{
-"type": "light",
-"color": [10.0, 10.0, 10.0],
-"position": [0, 2, 5],
-"direction": [0, -1, 0],
-"radial-a2": 1,
-"radial-a1": 1
-"radial-a0": 1,
-"angular-a0": 1,
+	"type": "light",
+	"color": [10.0, 10.0, 10.0],
+	"position": [0, 2, 5],
+	"direction": [0, -1, 0],
+	"radial-a2": 1,
+	"radial-a1": 1
+	"radial-a0": 1,
+	"angular-a0": 1,
 }
 {
-"type": "light"
-"color": [3.0, 2.0, 1.0],
-"position": [10, 20, 30],
-"radial-a2": 1,
+	"type": "light"
+	"color": [3.0, 2.0, 1.0],
+	"position": [10, 20, 30],
+	"radial-a2": 1,
 },
 {
-"type": "sphere",
-"diffuse_color": [1.0, 0.0, 0.0],
-"specular_color": [1.0, 1.0, 1.0],
-"position": [10, 20, 30],
+	"type": "plane",
+	"specular_color": [0.2, 0.0, 1.0],
+	"diffuse_color": [1.0, 0.1, 0.3],
+	"position": [1.0, 3.0, 40.0],
+	"normal": [2.0, 3.5, 0]
+}
+{
+	"type": "sphere",
+	"diffuse_color": [1.0, 0.0, 0.0],
+	"specular_color": [1.0, 1.0, 1.0],
+	"position": [10, 20, 30],
 },
 ]

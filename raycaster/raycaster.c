@@ -11,14 +11,123 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include "..\math\vector_math.h"
 #include "..\ppm\ppm.h"
 #include "..\json\json.h"
 #include "raycaster.h"
-#include "..\math\vector_math.h"
 
 /**
- * sqr
- *
+ * @param TO - DO
+ * @param TO - DO
+ * @param TO - DO
+ * @param TO - DO
+ * @returns TODO 
+ * @description TODO
+ */
+void specular_highlight(double *normal, 
+						double *light_pos, 
+						double *light_color, 
+						double *obj_specular_color, 
+						double *reflection_of_light,
+						double *rd,
+						double *vector){
+	//incident ray, reflected ray
+	double scalar1, scalar2;
+	
+	scalar1 = vector_dot_product(normal, light_pos);
+	scalar2 = vector_dot_product(rd, reflection_of_light);
+	
+	if((scalar1 > 0) && (scalar2 > 0)){
+        vector[0] = scalar2 * light_color[0] * obj_specular_color[0];
+        vector[1] = scalar2 * light_color[1] * obj_specular_color[1];
+        vector[2] = scalar2 * light_color[2] * obj_specular_color[2];			
+	
+	} else {
+        vector[0] = 0;
+        vector[1] = 0;
+        vector[2] = 0;
+		
+	}
+	
+}
+
+
+/**
+ * @param TO - DO
+ * @param TO - DO
+ * @param TO - DO
+ * @param TO - DO
+ * @returns TODO 
+ * @description 
+ */
+void diffuse_reflection(double *normal, double *light_pos, double *light_color, double *obj_diffuse_color, double *vector){
+	double scalar;
+
+	scalar = vector_dot_product(normal, light_pos);
+	
+	if(scalar > 0) {
+		vector[0] = scalar * obj_diffuse_color[0] * light_color[0];
+		vector[1] = scalar * obj_diffuse_color[1] * light_color[1];
+		vector[2] = scalar * obj_diffuse_color[2] * light_color[2];
+
+	} else {
+        vector[0] = 0;
+        vector[1] = 0;
+        vector[2] = 0;		
+		
+	}
+	
+}
+
+
+/**
+ * @param TO - DO
+ * @param TO - DO
+ * @param TO - DO
+ * @param TO - DO
+ * @returns TODO 
+ * @description TODO
+ */
+double fang(){
+	//TODO	
+}
+
+
+/**
+ * @param a0 - TODO
+ * @param a1 - TODO 
+ * @param a2 - TODO
+ * @param dl - TODO 
+ * @returns TODO 
+ * @description TODO
+ */
+double frad(double a0, double a1, double a2, double dl){
+	//TODO
+
+}
+
+/**
+ * @param - TODO
+ * @param - TODO 
+ * @param - TODO 
+ * @returns TODO 
+ * @description TODO
+ */
+double clamp(double number, double min, double max){
+	if(number > max) {
+		return max;
+		
+	} else if (number < min){
+		return min;
+		
+	} else {
+		return number;
+		
+	}
+}
+
+
+/**
  * @param v - double precision floating point number
  * @returns static function, no return
  * @description math operation that squares a double precision floating
@@ -30,9 +139,7 @@ static inline double sqr(double v) {
 
 
 /**
- * normalize
- *
- * @param v an array storing vector information
+ * @param v - an array storing vector information
  * @returns static function, no return 
  * @description vector normalization, divide each component by its magnitude
  */
@@ -46,33 +153,8 @@ static inline void normalize(double *v) {
 
 
 /**
- * clamp
- *
- * @param 
- * @param 
- * @param 
- * @returns double
- * @description 
- */
-double clamp(double number, double min, double max){
-	if(number > max) {
-		return max;
-		
-	} else if (number < min){
-		
-		return min;
-	} else {
-		
-		return number;
-	}
-}
-
-
-/**
- * get_camera
- *
- * @param objects[]
- * @param num_objects used to set the counter that iterates through an array of objects 
+ * @param objects - an array of objects
+ * @param num_objects - used to set the counter that iterates through an array of objects 
  * @returns the index value within the array the camera was found, -1 otherwise if the camera was not found
  * @description iterates through a scene or array of objects looking for an object with type
  * camera and returns the index of that object in the scene array or -1 if no camera was found.
@@ -94,14 +176,11 @@ int get_camera(Object objects[], int num_objects) {
 
 
 /**
- * sphere_intersection
- *
  * @param ro - ray vector orgin
  * @param rd - ray vector direction
  * @param center - sphere center aka position
  * @param radius - sphere radius
- * @returns double percision float t value that represents length of the intersecting vector, and -1 if
- * no intersection was detected.
+ * @returns double percision float t value that represents length of the intersecting vector, and -1 if no intersection was detected.
  * @description this function detects the distance a ray vector intersects the sphere
  */     
 double sphere_intersection(double *ro, double *rd, double *center, double radius){
@@ -144,14 +223,11 @@ double sphere_intersection(double *ro, double *rd, double *center, double radius
 
 
 /**
- * plane_intersection
- *
  * @param ro - ray vector orgin
  * @param rd - ray vector direction
  * @param pos - position
  * @param normal - the orthogonal normal vector to the plane
- * @returns double percision float t value that represents length of the intersecting vector, and -1 if
- * no intersection was detected.
+ * @returns double percision float t value that represents length of the intersecting vector, and -1 if no intersection was detected.
  * @description this function detects the distance a ray vector intersects the plane
  */
 double plane_intersection(double *ro, double *rd, double *pos, double *normal){
@@ -183,18 +259,13 @@ double plane_intersection(double *ro, double *rd, double *pos, double *normal){
 
 
 /**
- * raycaster
- *
- * @param objects[] - collection of objects read in from the json parser
+ * @param objects - collection of objects read in from the json parser
  * @param image - is an Image object used to store image data
- * @param num_objects - number of objects read in from the json parser use to set
- * iteration values for, for loops.
- * @returns Image - which is the image pointer to the image object that is used to store
- * the image data for write purposes.
- * @description this function implements the raycasting portion of this application it performs
- * the calculations for pixel scaling, and logic that uses the scene data to detect object ray
- * intersections, colors pixels related to the object data, and stores the collection of information
- * into an image data buffer to be written using a ppm write function.
+ * @param num_objects - number of objects read in from the json parser use to set iteration values for, for loops.
+ * @returns Image - which is the image pointer to the image object that is used to store the image data for write purposes.
+ * @description this function implements the raycasting portion of this application it performs the calculations for pixel scaling, 
+ * and logic that uses the scene data to detect object ray intersections, colors pixels related to the object data, and stores the 
+ * collection of information into an image data buffer to be written using a ppm write function.
  */
 Image* raycaster(Object objects[], Image *image, int num_objects) {
 	double pixel_height, pixel_width;
@@ -203,10 +274,8 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 	double t, best_t;
 	double red, green, blue;
 	int row, column, index, closest_obj;
-	double ron[3]; // Ray Orgin New
-	double rdn[3]; // Ray Orgin Direction
 	double rd[3];
-
+	
 	// Set ray orgin
 	double ro[3] = {0, 0, 0};
 	
@@ -272,73 +341,110 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 			if((best_t > 0) && (best_t != INFINITY)){
 				
 				if(strcmp(objects[closest_obj].type, "sphere") == 0) {
-					
-					red = clamp(objects[closest_obj].properties.sphere.color[0], 0, 1.0) * (image->max_color);
-					image->image_data[(image->width) * row + column].red = red;
-					
-					green = clamp(objects[closest_obj].properties.sphere.color[1], 0, 1.0) * (image->max_color);
-					image->image_data[(image->width) * row + column].green = green;
-					
-					blue = clamp(objects[closest_obj].properties.sphere.color[2], 0, 1.0) * (image->max_color);
-					image->image_data[(image->width) * row + column].blue = blue;
-					
-/* 					red = objects[closest_obj].properties.sphere.color[0] * (image->max_color);
+					red = objects[closest_obj].properties.sphere.color[0] * (image->max_color);
 					image->image_data[(image->width) * row + column].red = red;
 					
 					green = objects[closest_obj].properties.sphere.color[1] * (image->max_color);
 					image->image_data[(image->width) * row + column].green = green;
 					
 					blue = objects[closest_obj].properties.sphere.color[2] * (image->max_color);
-					image->image_data[(image->width) * row + column].blue = blue; */
+					image->image_data[(image->width) * row + column].blue = blue;
 				
 				} else if(strcmp(objects[closest_obj].type, "plane") == 0){
-					red = clamp(objects[closest_obj].properties.plane.color[0], 0, 1.0) * (image->max_color);
-					image->image_data[(image->width) * row + column].red = red;
-					
-					green = clamp(objects[closest_obj].properties.plane.color[1], 0, 1.0) * (image->max_color);
-					image->image_data[(image->width) * row + column].green = green;
-					
-					blue = clamp(objects[closest_obj].properties.plane.color[2], 0, 1.0) * (image->max_color);
-					image->image_data[(image->width) * row + column].blue = blue;					
-					
-/* 					red = objects[closest_obj].properties.plane.color[0] * (image->max_color);
+					red = objects[closest_obj].properties.plane.color[0] * (image->max_color);
 					image->image_data[(image->width) * row + column].red = red;
 					
 					green = objects[closest_obj].properties.plane.color[1] * (image->max_color);
 					image->image_data[(image->width) * row + column].green = green;
 					
 					blue = objects[closest_obj].properties.plane.color[2] * (image->max_color);
-					image->image_data[(image->width) * row + column].blue = blue; */
+					image->image_data[(image->width) * row + column].blue = blue;
 					
 				}
 				
-				// 1.) Iterate over lights
-				// 2.) Shadow test, where you do not apply the lights
-				// 3.) Can you see the light source?
+				/*   We have the closest object..
 
-				// Iterate through the lights
-/* 				for(index = 0; index < num_objects; index++) {
-					if(strcmp(objects[index].type, "light") == 0) {
-						vector_scale(rd, best_t, ron);
-						vector_add(ron, ro, ron);
-						vector_subtract(objects[index].properties.light.position, ron, rdn);
-						
-						for(k = 0; k < num_objects; k++){
-							// Repeat intersection code test
-							// If best_t > distance to light, continue...
-							if(object[k] == closest_shadow_obj){
-								// continue..
-							}
+					double* color = malloc(sizeof(double)*3);
+					color[0] = 0; // ambient_color[0];
+					color[1] = 0; // ambient_color[1];
+					color[2] = 0; // ambient_color[2];
+
+					for (int j=0; light[j] != NULL; j+=1) {
+					  // Shadow test
+					  Ron = closest_t * Rd + Ro;
+					  Rdn = light_position - Ron;
+					  closest_shadow_object = ...;
+					  for (int k=0; object[k] != NULL; k+=1) {
+					if (object[k] == closest_object) continue;
+					// 
+					switch(...) {
+					case SPHERE:
+					  t = sphere_intersect(..);
+					  break;
+					case PLANE:
+					  t = plane_intersect(..);
+					  break;
+					default:
+					  // ERROR
+					  break;
+					}
+					if (best_t > distance_to_light) {
+					  continue;
+					}
+					  }
+					  if (closest_shadow_object == NULL) {
+					// N, L, R, V
+					N = closest_object->normal; // plane
+					N = Ron - closest_object->center; // sphere
+					L = Rdn; // light_position - Ron;
+					R = reflection of L;
+					V = Rd;
+					diffuse = ...; // uses object's diffuse color
+					specular = ...; // uses object's specular color
+					color[0] += frad() * fang() * (diffuse + specular);
+					color[1] += frad() * fang() * (diffuse + specular);
+					color[2] += frad() * fang() * (diffuse + specular);
+					  }
+					}
+					// The color has now been calculated
+
+					buffer[...].r = (unsigned char)(255 * clamp(color[0]));
+					buffer[...].g = (unsigned char)(255 * clamp(color[1]);
+					buffer[...].b = (unsigned char)(255 * clamp(color[2]);	 */			
+				
+
+				
+
+			
+				// 1.) Calculate new ray orgin
+				// 2.) Iterate over lights
+				// 3.) Calculate new ray direction
+				// 4.) Shadow test, where you do not apply the lights
+
+				//int i, j;
+				double new_ray_orgin[3];
+				double new_ray_direction[3];
+				
+				vector_scale(rd, best_t, new_ray_direction);
+				vector_add(new_ray_direction, ro, new_ray_direction);
+				
+				// Can you see the light source?
+				for(index = 0; index < num_objects; index++) {
+					if((objects[index].type) != NULL) {
+						if(strcmp(objects[index].type, "light") == 0){
+							// Check light type
 							
+						
 						}
 						
-						if(closest_shadow_obj == null) {
-
-						}
-
 					}
 					
-				} */
+				}
+				
+				
+				
+				
+				
 				
 			}
 			
