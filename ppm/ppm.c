@@ -13,8 +13,6 @@
 #include "ppm.h"
 
 /**
- * check_rgb_bits
- *
  * @param red - integer value represents the red color channel
  * @param green - integer value represents the green color channel
  * @param blue - integer value represents the blue color channel
@@ -36,8 +34,6 @@ int check_rgb_bits(int red, int green, int blue, int max, int min) {
 
 
 /**
- * read_image
- *
  * @param filename - string pointer that represents a file name
  * @param image - an image structure
  * @returns void
@@ -174,8 +170,6 @@ void read_image(char *filename, Image *image) {
 
 
 /**
- * write_p6_image
- *
  * @param filename - string pointer that represents a file name
  * @param image - an image structure
  * @returns void
@@ -211,8 +205,6 @@ void write_p6_image(char *filename, Image *image) {
 
 
 /**
- * write_p3_image
- *
  * @param filename - string pointer that represents a file name
  * @param image - an image structure
  * @returns void

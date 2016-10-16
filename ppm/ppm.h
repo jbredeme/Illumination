@@ -10,8 +10,6 @@
 #define ppm_h
 
 /**
- * Pixel
- *
  * @description three 1 byte unsigned characters used to store RGB color
  * values of a pixel.
  */
@@ -21,8 +19,6 @@ typedef struct Pixel {
 } Pixel;
 
 /**
- * Image
- *
  * @description structure used to represent portable pixmap image data in
  * system memory.
  */

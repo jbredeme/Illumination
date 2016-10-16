@@ -10,6 +10,20 @@
 #define vector_math_h
 
 /**
+ * @param v - an array storing vector information
+ * @returns static function, no return 
+ * @description vector normalization, divide each component by its magnitude
+ */
+static inline void normalize(double *v) {
+	double len = sqrt(pow(v[0], 2) + pow(v[1], 2) + pow(v[2], 2));
+	v[0] /= len;
+	v[1] /= len;
+	v[2] /= len;
+	
+}
+
+
+/**
  * @param
  * @param
  * @param
@@ -96,6 +110,18 @@ static inline void vector_copy(double *vector_a, double *vector_b) {
   
 }
 
+/**
+ * @param
+ * @param
+ * @param
+ * @returns
+ * @description
+ */
+static inline double vector_length(double *vector_a) {
+	return sqrt(pow(vector_a[0], 2) + pow(vector_a[1], 2) + pow(vector_a[2], 2));
+  
+}
+
 
 /**
  * @param
@@ -104,7 +130,7 @@ static inline void vector_copy(double *vector_a, double *vector_b) {
  * @returns
  * @description
  */
-static inline double vector_3d_distance(double *vector_a, double *vector_b) {
+static inline double vector_distance_3d(double *vector_a, double *vector_b) {
 	return sqrt(pow((vector_b[0] - vector_a[0]), 2) + pow((vector_b[1] - vector_a[1]), 2) + pow((vector_b[2] - vector_a[2]), 2));
   
 }

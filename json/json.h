@@ -55,7 +55,6 @@ typedef struct Sphere {
  * @description TODO
  */
 typedef struct Light {
-	char *type;
 	double color[3];
 	double position[3];
 	double direction[3];

@@ -9,6 +9,16 @@
 #ifndef raycaster_h
 #define raycaster_h
 
+/**
+ * @description
+ */
+typedef struct Tuple{
+	int index;
+	double distance;
+	
+} Tuple;
+
+
 // function declarations
 Image* raycaster(Object objects[], Image *image, int num_objects);
  
