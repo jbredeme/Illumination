@@ -14,12 +14,6 @@
 	"angular-a0": 1,
 }
 {
-	"type": "light"
-	"color": [3.0, 2.0, 1.0],
-	"position": [10, 20, 30],
-	"radial-a2": 1,
-},
-{
 	"type": "plane",
 	"specular_color": [0.2, 0.0, 1.0],
 	"diffuse_color": [1.0, 0.1, 0.3],

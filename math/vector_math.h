@@ -10,15 +10,15 @@
 #define vector_math_h
 
 /**
- * @param v - an array storing vector information
+ * @param vector_a - an array storing vector information
  * @returns static function, no return 
  * @description vector normalization, divide each component by its magnitude
  */
-static inline void normalize(double *v) {
-	double len = sqrt(pow(v[0], 2) + pow(v[1], 2) + pow(v[2], 2));
-	v[0] /= len;
-	v[1] /= len;
-	v[2] /= len;
+static inline void normalize(double *vector_a) {
+	double len = sqrt(pow(vector_a[0], 2) + pow(vector_a[1], 2) + pow(vector_a[2], 2));
+	vector_a[0] /= len;
+	vector_a[1] /= len;
+	vector_a[2] /= len;
 	
 }
 
@@ -97,18 +97,22 @@ static inline void vector_cross_product(double *vector_a, double *vector_b, doub
 
 
 /**
- * @param
- * @param
+ * @param vector_a - Velocity Vector
+ * @param vector_b - The Normal Vector of the plane
  * @param
  * @returns
  * @description
  */
-static inline void vector_copy(double *vector_a, double *vector_b) {
-  vector_b[0] = vector_a[1];
-  vector_b[1] = vector_a[2];
-  vector_b[2] = vector_a[0];
-  
+static inline void vector_reflection(double *vector_a, double *vector_b, double *vector_c) {
+	double scalar;
+	double vector_o[3] = {0, 0, 0};
+
+	scalar = vector_dot_product(vector_a, vector_b);
+	vector_scale(vector_b, (2.0 * scalar), vector_o);
+	vector_subtract(vector_a, vector_o, vector_c);
+
 }
+
 
 /**
  * @param
@@ -130,7 +134,22 @@ static inline double vector_length(double *vector_a) {
  * @returns
  * @description
  */
-static inline double vector_distance_3d(double *vector_a, double *vector_b) {
+static inline void vector_clone(double *vector_a, double *vector_b) {
+	vector_b[0] = vector_a[0];
+	vector_b[1] = vector_a[1];
+	vector_b[2] = vector_a[2];
+	
+}
+
+
+/**
+ * @param
+ * @param
+ * @param
+ * @returns
+ * @description
+ */
+static inline double vector_distance(double *vector_a, double *vector_b) {
 	return sqrt(pow((vector_b[0] - vector_a[0]), 2) + pow((vector_b[1] - vector_a[1]), 2) + pow((vector_b[2] - vector_a[2]), 2));
   
 }

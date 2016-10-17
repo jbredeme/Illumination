@@ -138,6 +138,7 @@ static inline double sqr(double v) {
 	
 }
 
+
 /**
  * @param objects - an array of objects
  * @param num_objects - used to set the counter that iterates through an array of objects 
@@ -248,7 +249,7 @@ double plane_intersection(double *ro, double *rd, double *pos, double *normal){
  * @param objects - TODO
  * @param num_objects - TODO 
  * @param ro - TODO 
- * @returns rd- TODO 
+ * @returns TODO 
  * @description TODO
  */
 Tuple* get_shortest_distance(Object *objects, int num_objects, double *ro, double *rd){
@@ -299,16 +300,14 @@ Tuple* get_shortest_distance(Object *objects, int num_objects, double *ro, doubl
  */
 Image* raycaster(Object objects[], Image *image, int num_objects) {
 	double pixel_height, pixel_width;
-	double cx, cy;
-	double h, w;
-	double t, best_t;
+	double cx, cy, h, w;
 	double red, green, blue;
 	int row, column, index, closest_obj;
-	double rd[3];
 	Tuple *tp, *tp2;
 	
 	// Set ray orgin
 	double ro[3] = {0, 0, 0};
+	double rd[3] = {0, 0, 0};
 	
 	// Set center x & y
 	cx = 0;
@@ -341,59 +340,11 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 			
 			// Normalize ray direction
 			normalize(rd);
-			
 			tp = get_shortest_distance(objects, num_objects, ro, rd);
-			closest_obj = tp->index;
-			best_t = tp->distance;
+
 			
-/* 			best_t = INFINITY;
-			
-			for(index = 0; index < num_objects; index++) {
-				t = 0;
-				
-				if((objects[index].type) != NULL) {
-					if(strcmp((objects[index].type), "sphere") == 0){
-						t = sphere_intersection(ro, rd, objects[index].properties.sphere.position, objects[index].properties.sphere.radius);
-					
-					} else if(strcmp((objects[index].type), "plane") == 0) {
-						t = plane_intersection(ro, rd, objects[index].properties.plane.position, objects[index].properties.plane.normal);
-				
-					}
-					
-					// Get the best t value and object index
-					if ((t > 0) && (t < best_t)){
-						best_t = t;
-						closest_obj = index;
-					
-					}
-					
-				}
-				
-				
-			} // EoObject iteration loop */
-			
-			if((best_t > 0) && (best_t != INFINITY)){
-/* 				if(strcmp(objects[closest_obj].type, "sphere") == 0) {
-					red = objects[closest_obj].properties.sphere.color[0] * (image->max_color);
-					image->image_data[(image->width) * row + column].red = red;
-					
-					green = objects[closest_obj].properties.sphere.color[1] * (image->max_color);
-					image->image_data[(image->width) * row + column].green = green;
-					
-					blue = objects[closest_obj].properties.sphere.color[2] * (image->max_color);
-					image->image_data[(image->width) * row + column].blue = blue;
-				
-				} else if(strcmp(objects[closest_obj].type, "plane") == 0){
-					red = objects[closest_obj].properties.plane.color[0] * (image->max_color);
-					image->image_data[(image->width) * row + column].red = red;
-					
-					green = objects[closest_obj].properties.plane.color[1] * (image->max_color);
-					image->image_data[(image->width) * row + column].green = green;
-					
-					blue = objects[closest_obj].properties.plane.color[2] * (image->max_color);
-					image->image_data[(image->width) * row + column].blue = blue;
-					
-				} */
+			if(((tp->distance) > 0) && ((tp->distance) != INFINITY)){
+
 
 				
 				// Now that we have the closest object and t value lets illuminate things
@@ -403,29 +354,96 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 				// 3.) Calculate new ray direction
 				// 4.) Shadow test, where you do not apply the lights
 				
-				double newRo[3];
-				double newRd[3];
+ 				double new_ro[3];
+				double new_rd[3];
 				double normal[3];
 				double diffuse_color[3];
 				double specular_highlight[3];
-				double distance_to_light;
-				int best_object;
-				double best_tl, scalar;
+				double diffuse_out[3];
+				double color_out[3];
+				double scalar;
 				
-				vector_scale(rd, best_t, newRo);
-				vector_add(ro, newRo, newRo);
+				double distance_to_light;
+				double light_position[3];
+				double light_reflection[3];
+				double ray_direction[3];
+				double diffuse_light_contribution[3];
+				
+				// Establish orgin for the new ray
+				vector_scale(rd, (tp->distance), new_ro);
+				vector_add(ro, new_ro, new_ro);
 				
 				// Iterate through the lights in the scene
 				for(index = 0; index < num_objects; index++){
 					if(strcmp(objects[index].type, "light") == 0){
+						
+						// Calcuate the new ray direction
+						vector_subtract(objects[index].properties.light.position, new_ro, new_rd);
+						normalize(new_rd);
+						distance_to_light = vector_distance(objects[index].properties.light.position, new_ro);
+						
+						// Light ray intersection test for shadows
+						tp2 = get_shortest_distance(objects, num_objects, new_ro, new_rd);
+						
+						if(tp2->distance != INFINITY) {
+							
+							if((objects[tp2->index].type) != NULL) {
+								if(strcmp((objects[tp2->index].type), "sphere") == 0){	
+									
+									vector_clone((objects[tp2->index].properties.sphere.position), normal);
+									vector_clone((objects[tp2->index].properties.sphere.diffuse_color), diffuse_color);
+									vector_clone((objects[tp2->index].properties.sphere.specular_color), specular_highlight);
+									// Calculate normal vector for sphere, need this!
+									vector_subtract(objects[tp2->index].properties.sphere.position, new_ro, normal);
+									normalize(normal);
+									
+								} else if(strcmp((objects[tp2->index].type), "plane") == 0) {
+									vector_clone((objects[tp2->index].properties.plane.normal), normal);
+									vector_clone((objects[tp2->index].properties.plane.diffuse_color), diffuse_color);
+									vector_clone((objects[tp2->index].properties.plane.specular_color), specular_highlight);									
 
+								}
+								
+							}
+
+							vector_subtract(objects[tp2->index].properties.sphere.position, new_ro, light_position);
+							normalize(light_position);
+							vector_reflection(light_position, objects[tp2->index].properties.light.position, light_reflection);
+							// Attempt at diffuse
+							diffuse_reflection(normal, light_position, (objects[index].properties.light.color), diffuse_color, diffuse_out);
+
+							color_out[0] = color_out[0] + diffuse_out[0];
+							color_out[1] = color_out[1] + diffuse_out[1];
+							color_out[2] = color_out[2] + diffuse_out[2];
+							
+						}
 						
 						
 						
 					}
 				}
 				
-				// Can you see the light source?
+				if(strcmp(objects[(tp->index)].type, "sphere") == 0) {
+					red = clamp(color_out[0], 0, 1) * (image->max_color);
+					image->image_data[(image->width) * row + column].red = red;
+					
+					green = clamp(color_out[1], 0, 1) * (image->max_color);
+					image->image_data[(image->width) * row + column].green = green;
+					
+					blue = clamp(color_out[2], 0, 1) * (image->max_color);
+					image->image_data[(image->width) * row + column].blue = blue;
+				
+				} else if(strcmp(objects[(tp->index)].type, "plane") == 0){
+					red = clamp(color_out[0], 0, 1) * (image->max_color);
+					image->image_data[(image->width) * row + column].red = red;
+					
+					green = clamp(color_out[1], 0, 1) * (image->max_color);
+					image->image_data[(image->width) * row + column].green = green;
+					
+					blue = clamp(color_out[2], 0, 1) * (image->max_color);
+					image->image_data[(image->width) * row + column].blue = blue;
+					
+				}
 				
 
 				
