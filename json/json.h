@@ -58,6 +58,7 @@ typedef struct Light {
 	double color[3];
 	double position[3];
 	double direction[3];
+	double theta;
 	double radial_a0;
 	double radial_a1;
 	double radial_a2;

@@ -16,11 +16,12 @@
 int line_num;
 
 /**
+ * Reads in a character from an input stream, checks if the character is a newline, carriage return, 
+ * or linefeed and adds 1 to the line number counter (line_num). If an end-of-file is encountered, 
+ * prompt the user exit program.
+ *
  * @param file pointer
  * @returns interger value of the ascii character read in
- * @description Reads in a character from an input stream, checks if the character is a newline, 
- * carriage return, or linefeed and adds 1 to the line number counter (line_num).
- * If an end-of-file is encountered, prompt the user exit program.
  */
 int get_char(FILE *fpointer) {
 	int token = getc(fpointer);
@@ -42,11 +43,11 @@ int get_char(FILE *fpointer) {
  
  
 /**
+ * Reads in a character from an input stream, checks if the character is a newline, carriage return, 
+ * or linefeed and advances the file position indicator.
+ *
  * @param file pointer
  * @returns void
- * @description Reads in a character from an input stream, checks if the character is a newline, 
- * carriage return, or linefeed and adds 1 to the line number counter (line_num).
- * If an end-of-file is encountered, prompt the user exit program.
  */
 void skip_whitespace(FILE *fpointer) {
 	int token = get_char(fpointer);
@@ -62,10 +63,11 @@ void skip_whitespace(FILE *fpointer) {
 
  
 /**
+ * Reads in a stream of characters delimited by quotation marks. Validates against the existence of escape 
+ * sequence codes, strings longer then 256 characters, and non-ascii characters. 
+ *
  * @param file pointer
- * @returns string of characters delimited by "... "
- * @description Reads in a stream of characters delimited by quotation marks. Validates against the existence
- * of escape sequence codes, strings longer then 256 characters, and non-ascii characters. 
+ * @returns string of characters delimited by "..."
  */
 char *get_string(FILE *fpointer){
 	char buffer[256];
@@ -126,10 +128,10 @@ char *get_string(FILE *fpointer){
  
  
 /**
+ * Reads in a double precsion floating point number, if none are found throws error exits the program.
+ * 
  * @param file pointer
  * @returns double
- * @description Reads in a double precsion floating point number, if none are found throws error
- * exits the program. 
  */
 double get_double(FILE *fpointer){
 	 double dbl;
@@ -141,7 +143,7 @@ double get_double(FILE *fpointer){
 		exit(-1);		
 		
 	 } else {
-		 return dbl;
+		 return (dbl);
 		 
 	 }
 	 
@@ -149,10 +151,10 @@ double get_double(FILE *fpointer){
  
  
 /**
+ * Reads in an array with the format pattern [x, y, z] and parses into an array of doubles.
+ *
  * @param file pointer
- * @returns double[3]
- * @description Reads in an array with the format pattern [x, y, z] and parses into an array of	
- * doubles.
+ * @returns double array
  */
 double *get_vector(FILE *fpointer){
 	// Allocate memory for vector array of doubles
@@ -221,9 +223,10 @@ double *get_vector(FILE *fpointer){
 
  
 /**
+ * Check if color value is within the acceptable tolerances 0 to 1.0.
+ *
  * @param color_v - an array of 3 double precsion numbers 
  * @returns 0 if an element is not within the acceptable tolerances 0 to 1.0 and 1 otherwise
- * @description check if color value is within the acceptable tolerances 0 to 1.0
  */
  int color_tolerance(double color_v[]){
 	int index;
@@ -242,15 +245,16 @@ double *get_vector(FILE *fpointer){
 
  
 /**
- * @param file pointer
- * @param array of Object
- * @returns integer number of item read-in
- * @description reads in a scene of objects formatted using JavaScript Object Notation (JSON)
+ * Reads in a scene of objects formatted using JavaScript Object Notation (JSON)
  * - Accepts [ empty scene ]
  * - Accepts { empty objects }
  * - Accepts comma and non-comma separated objects blocks
  * - Accepts comma and non-comma separated name:value pairs
  * - Whitespace insensitive
+ *
+ * @param file pointer
+ * @param array of Object
+ * @returns integer number of item read-in
  */ 
 int json_read_scene(FILE *fpointer, Object objects[]) {
 	int token, index;
@@ -441,6 +445,23 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 					
 				}
 			
+			} else if(strcmp(name, "theta") == 0) {
+				// Skip whitespace(s), read in the next character and advance the stream position indicator
+				skip_whitespace(fpointer);
+				token = get_char(fpointer);
+
+				if(token != ':') {
+					fprintf(stderr, "Error, line number %d; invalid separator '%c', expected character '%c'.\n", line_num, token, ':');
+					// Close file stream flush all buffers
+					fclose(fpointer);		
+					exit(-1);
+					
+				} else {
+					skip_whitespace(fpointer);
+					objects[index].properties.light.theta = get_double(fpointer);
+					
+				}
+			
 			} else if(strcmp(name, "diffuse_color") == 0) {
 				// Skip whitespace(s), read in the next character and advance the stream position indicator
 				skip_whitespace(fpointer);
@@ -459,7 +480,6 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 					// Validates against object defintions without a type defined. That is all 
 					// objects and object properties associated to a type value of NULL are ignored
 					if(objects[index].type != NULL) {
-
 						// Check color tolerance range of 0 to 1.0
 						if(color_tolerance(vector) != 1) {
 							fprintf(stderr, "Error, invalid color tolerance in %s color array.\n", objects[index].type);
@@ -503,7 +523,6 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 					// Validates against object defintions without a type defined. That is all 
 					// objects and object properties associated to a type value of NULL are ignored
 					if(objects[index].type != NULL) {
-
 						// Check color tolerance range of 0 to 1.0
 						if(color_tolerance(vector) != 1) {
 							fprintf(stderr, "Error, invalid color tolerance in %s color array.\n", objects[index].type);
@@ -547,7 +566,6 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 					// Validates against object defintions without a type defined. That is all 
 					// objects and object properties associated to a type value of NULL are ignored
 					if(objects[index].type != NULL) {
-						
 						if(strcmp(objects[index].type, "light") == 0) {
 							objects[index].properties.light.color[0] = vector[0];
 							objects[index].properties.light.color[1] = vector[1];
@@ -598,7 +616,7 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 					
 					// Validates against object defintions without a type defined. That is all 
 					// objects and object properties associated to a type value of NULL are ignored
-					if(objects[index].type != NULL){
+					if(objects[index].type != NULL) {
 						if(strcmp(objects[index].type, "sphere") == 0) {
 							objects[index].properties.sphere.position[0] = vector[0];
 							objects[index].properties.sphere.position[1] = vector[1];
