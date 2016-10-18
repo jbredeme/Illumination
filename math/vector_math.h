@@ -24,11 +24,14 @@ static inline void normalize(double *vector_a) {
 
 
 /**
- * @param
- * @param
- * @param
+ * TODO
+ * 
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
  * @returns
- * @description
  */
 static inline void vector_add(double *vector_a, double *vector_b, double *vector_c) {
   vector_c[0] = vector_a[0] + vector_b[0];
@@ -39,11 +42,14 @@ static inline void vector_add(double *vector_a, double *vector_b, double *vector
 
 
 /**
- * @param
- * @param
- * @param
+ * TODO
+ * 
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
  * @returns
- * @description
  */
 static inline void vector_subtract(double *vector_a, double *vector_b, double *vector_c) {
   vector_c[0] = vector_a[0] - vector_b[0];
@@ -54,11 +60,14 @@ static inline void vector_subtract(double *vector_a, double *vector_b, double *v
 
 
 /**
- * @param
- * @param
- * @param
+ * TODO
+ * 
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
  * @returns
- * @description
  */
 static inline void vector_scale(double *vector_a, double scalar, double *vector_c) {
   vector_c[0] = scalar * vector_a[0];
@@ -69,11 +78,14 @@ static inline void vector_scale(double *vector_a, double scalar, double *vector_
 
 
 /**
- * @param
- * @param
- * @param
+ * TODO
+ * 
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
  * @returns
- * @description
  */
 static inline double vector_dot_product(double *vector_a, double *vector_b) {
   return (vector_a[0] * vector_b[0]) + (vector_a[1] * vector_b[1]) + (vector_a[2] * vector_b[2]);
@@ -82,11 +94,14 @@ static inline double vector_dot_product(double *vector_a, double *vector_b) {
 
 
 /**
- * @param
- * @param
- * @param
+ * TODO
+ * 
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
  * @returns
- * @description
  */
 static inline void vector_cross_product(double *vector_a, double *vector_b, double *vector_c) {
   vector_c[0] = (vector_a[1] * vector_b[2]) - (vector_a[2] * vector_b[1]);
@@ -97,11 +112,14 @@ static inline void vector_cross_product(double *vector_a, double *vector_b, doub
 
 
 /**
- * @param vector_a - Velocity Vector
- * @param vector_b - The Normal Vector of the plane
- * @param
+ * TODO
+ * 
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
  * @returns
- * @description
  */
 static inline void vector_reflection(double *vector_a, double *vector_b, double *vector_c) {
 	double scalar;
@@ -115,11 +133,14 @@ static inline void vector_reflection(double *vector_a, double *vector_b, double 
 
 
 /**
- * @param
- * @param
- * @param
+ * TODO
+ * 
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
  * @returns
- * @description
  */
 static inline double vector_length(double *vector_a) {
 	return sqrt(pow(vector_a[0], 2) + pow(vector_a[1], 2) + pow(vector_a[2], 2));
@@ -128,11 +149,14 @@ static inline double vector_length(double *vector_a) {
 
 
 /**
- * @param
- * @param
- * @param
+ * TODO
+ * 
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
  * @returns
- * @description
  */
 static inline void vector_clone(double *vector_a, double *vector_b) {
 	vector_b[0] = vector_a[0];
@@ -143,11 +167,14 @@ static inline void vector_clone(double *vector_a, double *vector_b) {
 
 
 /**
- * @param
- * @param
- * @param
+ * TODO
+ * 
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
+ * @param TODO
  * @returns
- * @description
  */
 static inline double vector_distance(double *vector_a, double *vector_b) {
 	return sqrt(pow((vector_b[0] - vector_a[0]), 2) + pow((vector_b[1] - vector_a[1]), 2) + pow((vector_b[2] - vector_a[2]), 2));
