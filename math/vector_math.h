@@ -158,7 +158,7 @@ static inline double vector_length(double *vector_a) {
  * @param TODO
  * @returns
  */
-static inline void vector_clone(double *vector_a, double *vector_b) {
+static inline void vector_copy(double *vector_a, double *vector_b) {
 	vector_b[0] = vector_a[0];
 	vector_b[1] = vector_a[1];
 	vector_b[2] = vector_a[2];
