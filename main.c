@@ -127,6 +127,7 @@ int main(int argc, char *argv[]){
 						printf("Color: %lf %lf %lf\n", objects[count].properties.light.color[0], objects[count].properties.light.color[1], objects[count].properties.light.color[2]);
 						printf("Position: %lf %lf %lf\n", objects[count].properties.light.position[0], objects[count].properties.light.position[1], objects[count].properties.light.position[2]);
 						printf("Direction: %lf %lf %lf\n", objects[count].properties.light.direction[0], objects[count].properties.light.direction[1], objects[count].properties.light.direction[2]);
+						printf("Theta: %lf\n", objects[count].properties.light.theta);
 						printf("Radial a0: %lf\n", objects[count].properties.light.radial_a0);
 						printf("Radial a1: %lf\n", objects[count].properties.light.radial_a1);
 						printf("Radial a2: %lf\n", objects[count].properties.light.radial_a2);
