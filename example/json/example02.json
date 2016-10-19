@@ -13,7 +13,6 @@
 	},
 	{
 	"type": "plane",
-	"radius": 2.0,
 	"normal": [0, 1, 0],
 	"diffuse_color": [0, 1, 0],
 	"position": [0, -1, 0]
