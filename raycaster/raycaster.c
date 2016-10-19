@@ -26,8 +26,25 @@
  * @param TODO
  * @returns
  */
-void specular_highlight() {
-	// TODO
+void specular_highlight(double *normal, double *new_rd, double *reflected_vector, double *rd, double *specular_color, double *light_color, double *color) {
+    double scalar1, scalar2, scalar3;
+	
+	scalar1 = vector_dot_product(normal, new_rd);
+	scalar2 = vector_dot_product(rd, reflected_vector);
+	
+    if (scalar1 > 0 && scalar2 > 0) {
+        scalar3 = pow(scalar2, 20);
+        color[0] = scalar3 * specular_color[0] * light_color[0];
+        color[1] = scalar3 * specular_color[1] * light_color[1];
+        color[2] = scalar3 * specular_color[2] * light_color[2];
+		
+    } else {
+        color[0] = 0;
+        color[1] = 0;
+        color[2] = 0;
+		
+    }
+	
 }
 
 
@@ -71,8 +88,19 @@ void diffuse_reflection(double *normal, double *new_rd, double *light_color, dou
  * @param TODO
  * @returns
  */
-double fang() {
-	// TODO	
+double fang(double *direction, double a0, double theta, double *distance) {
+	double scalar;
+	
+	// Check light type
+	if((theta == 0.0) && (direction[0] == 0) && (direction[1] == 0) && (direction[2] == 0)) {
+		return (1.0);
+		
+	} else {
+		scalar = vector_dot_product(direction, distance);
+		return (pow(scalar, a0));
+		
+	}
+		
 }
 
 
@@ -86,8 +114,15 @@ double fang() {
  * @param TODO
  * @returns
  */
-double frad(double a0, double a1, double a2, double dl) {
-	return ((1)/(a0 + (a1 * dl) + (a2 * pow(dl, 2))));
+double frad(double a0, double a1, double a2, double distance) {
+	if(distance < INFINITY) {
+		return ((1)/(a0 + (a1 * distance) + (a2 * pow(distance, 2))));
+		
+	} else {
+		// Some default value
+		return (1.0);
+		
+	}
 
 }
 
@@ -215,7 +250,7 @@ double plane_intersection(double *ro, double *rd, double *pos, double *normal) {
 	t = numerator / denominator;
 	
 	if(t >= 0) {
-		return t;
+		return (t);
 		
 	} else {
 		return (-1);
@@ -240,7 +275,6 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 	double cx, cy, h, w;
 	double red, green, blue, distance, best_distance;
 	int row, column, index, closest_object;
-	//Tuple *tp, *tp2;
 	
 	// Set ray orgin
 	double ro[3] = {0, 0, 0};
@@ -269,6 +303,7 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 		
 	}
 
+	// Iterate over pixel matrix
 	for(row = 0; row < (image->height); row++) {
 		for(column = 0; column < (image->width); column++) {
 			rd[0] = (cx - (w / 2.0) + pixel_width * (column + 0.5));
@@ -303,25 +338,24 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 			}
 			
 			if((best_distance > 0) && (best_distance != INFINITY)) {
+				
 				// Now that we have the closest object and t value lets illuminate things
 				// 1.) Calculate new ray orgin
 				// 2.) Iterate over lights
 				// 3.) Calculate new ray direction
-				// 4.) Shadow test, where you do not apply the lights
+				// 4.) Shadow test - do not apply the lights
 				
  			    double new_ro[3];
 				double new_rd[3];
 				double normal[3];
 				double diffuse_color[3];
-				double specular_highlight[3];
+				double specular_color[3];
 				double diffuse_out[3];
+				double specular_out[3];
 				double color_out[3];
-				
-				double distance_to_light;
-				double light_position[3];
-				double light_reflection[3];
+				double reflection_vector[3];
 				int index2, closest_object2;
-				double distance2, best_distance2;
+				double distance2, best_distance2, distance_to_light;;
 				
  				// Establish orgin for the new ray
 				vector_scale(rd, best_distance, new_ro);
@@ -333,28 +367,33 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 						
 						// Calcuate the new ray direction
 						vector_subtract(objects[index].properties.light.position, new_ro, new_rd);
-						normalize(new_rd);
 						distance_to_light = vector_length(new_rd);
+						normalize(new_rd);
+						
 						best_distance2 = INFINITY;
 						
 						// Other object intersection test
 						for(index2 = 0; index2 < num_objects; index2++) {
-							distance2 = 0;
-							// Check against objects with null types
-							if((objects[index2].type) != NULL) {
-								if(strcmp((objects[index2].type), "sphere") == 0) {
-									distance2 = sphere_intersection(new_ro, new_rd, objects[index2].properties.sphere.position, objects[index2].properties.sphere.radius);
-								
-								} else if(strcmp((objects[index2].type), "plane") == 0) {
-									distance2 = plane_intersection(new_ro, new_rd, objects[index2].properties.plane.position, objects[index2].properties.plane.normal);
+							distance2 = 0; // <= reset distance each iteration
 							
-								}
+							if(index != index2) {
+								// Check against objects with null types
+								if((objects[index2].type) != NULL) {
+									if(strcmp((objects[index2].type), "sphere") == 0) {
+										distance2 = sphere_intersection(new_ro, new_rd, objects[index2].properties.sphere.position, objects[index2].properties.sphere.radius);
+									
+									} else if(strcmp((objects[index2].type), "plane") == 0) {
+										distance2 = plane_intersection(new_ro, new_rd, objects[index2].properties.plane.position, objects[index2].properties.plane.normal);
 								
-								if(distance2 < distance_to_light) {
-									// Get the best distance value and object index
-									if ((distance2 > 0) && (distance2 < (best_distance2))) {
-										closest_object2 = index2;
-										best_distance2 = distance2;
+									}
+									
+									if(distance2 <= distance_to_light) {
+										// Get the best distance value and object index
+										if ((distance2 > 0) && (distance2 < (best_distance2))) {
+											closest_object2 = index2;
+											best_distance2 = distance2;
+											
+										}
 										
 									}
 									
@@ -368,34 +407,35 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 							if((objects[closest_object].type) != NULL) {
 								if(strcmp((objects[closest_object].type), "sphere") == 0) {
 									vector_copy((objects[closest_object].properties.sphere.position), normal);
+									vector_subtract(new_ro, objects[closest_object].properties.sphere.position, normal); // <= calculate normal vector for sphere
 									vector_copy((objects[closest_object].properties.sphere.diffuse_color), diffuse_color);
-									vector_copy((objects[closest_object].properties.sphere.specular_color), specular_highlight);
-									// Calculate normal vector for sphere, need this!
-									vector_subtract(objects[closest_object].properties.sphere.position, new_ro, normal);
-									normalize(normal);
+									vector_copy((objects[closest_object].properties.sphere.specular_color), specular_color);
 									
 								} else if(strcmp((objects[closest_object].type), "plane") == 0) {
 									vector_copy((objects[closest_object].properties.plane.normal), normal);
 									vector_copy((objects[closest_object].properties.plane.diffuse_color), diffuse_color);
-									vector_copy((objects[closest_object].properties.plane.specular_color), specular_highlight);									
+									vector_copy((objects[closest_object].properties.plane.specular_color), specular_color);									
 
 								}
 								
 							}
-
-							vector_reflection(light_position, normal, light_reflection);
-							diffuse_reflection(normal, new_rd, (objects[index].properties.light.color), diffuse_color, diffuse_out);
 							
-							color_out[0] = diffuse_out[0];
-							color_out[1] = diffuse_out[1];
-							color_out[2] = diffuse_out[2];
+							normalize(normal);
+							normalize(new_rd);
+							vector_reflection(new_rd, normal, reflection_vector);
+							diffuse_reflection(normal, new_rd, (objects[index].properties.light.color), diffuse_color, diffuse_out);
+							specular_highlight(normal, new_rd, reflection_vector, rd, specular_color, (objects[index].properties.light.color), specular_out);
+							
+							color_out[0] = diffuse_out[0] + specular_out[0];
+							color_out[1] = diffuse_out[1] + specular_out[1];
+							color_out[2] = diffuse_out[2] + specular_out[2];
 							
 						}
-
+						
 					}
-					
-				} 
-				
+			
+				}
+
 				if(strcmp(objects[(closest_object)].type, "sphere") == 0) {
 					red = clamp(color_out[0], 0, 1) * (image->max_color);
 					image->image_data[(image->width) * row + column].red = red;
@@ -405,7 +445,7 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 					
 					blue = clamp(color_out[2], 0, 1) * (image->max_color);
 					image->image_data[(image->width) * row + column].blue = blue;
-				
+
 				} else if(strcmp(objects[(closest_object)].type, "plane") == 0) {
 					red = clamp(color_out[0], 0, 1) * (image->max_color);
 					image->image_data[(image->width) * row + column].red = red;
@@ -417,6 +457,11 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 					image->image_data[(image->width) * row + column].blue = blue;
 					
 				}
+				
+			} else {
+				image->image_data[(image->width) * row + column].red = 0;
+				image->image_data[(image->width) * row + column].green = 0;
+				image->image_data[(image->width) * row + column].blue = 0;		
 				
 			}
 			
