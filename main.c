@@ -104,7 +104,7 @@ int main(int argc, char *argv[]){
 					
 					if(strcmp(objects[count].type, "sphere") == 0){
 						printf("Type: %s\n", objects[count].type);
-						//printf("Color: %lf %lf %lf\n", objects[count].properties.sphere.color[0], objects[count].properties.sphere.color[1], objects[count].properties.sphere.color[2]);
+						// printf("Color: %lf %lf %lf\n", objects[count].properties.sphere.color[0], objects[count].properties.sphere.color[1], objects[count].properties.sphere.color[2]);
 						printf("Position: %lf %lf %lf\n", objects[count].properties.sphere.position[0], objects[count].properties.sphere.position[1], objects[count].properties.sphere.position[2]);
 						printf("Diffuse Color: %lf %lf %lf\n", objects[count].properties.sphere.diffuse_color[0], objects[count].properties.sphere.diffuse_color[1], objects[count].properties.sphere.diffuse_color[2]);
 						printf("Specular Color: %lf %lf %lf\n", objects[count].properties.sphere.specular_color[0], objects[count].properties.sphere.specular_color[1], objects[count].properties.sphere.specular_color[2]);
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]){
 					
 					if(strcmp(objects[count].type, "plane") == 0){
 						printf("Type: %s\n", objects[count].type);
-						printf("Color: %lf %lf %lf\n", objects[count].properties.plane.color[0], objects[count].properties.plane.color[1], objects[count].properties.plane.color[2]);
+						// printf("Color: %lf %lf %lf\n", objects[count].properties.plane.color[0], objects[count].properties.plane.color[1], objects[count].properties.plane.color[2]);
 						printf("Position: %lf %lf %lf\n", objects[count].properties.plane.position[0], objects[count].properties.plane.position[1], objects[count].properties.plane.position[2]);
 						printf("Diffuse Color: %lf %lf %lf\n", objects[count].properties.plane.diffuse_color[0], objects[count].properties.plane.diffuse_color[1], objects[count].properties.plane.diffuse_color[2]);
 						printf("Specular Color: %lf %lf %lf\n", objects[count].properties.plane.specular_color[0], objects[count].properties.plane.specular_color[1], objects[count].properties.plane.specular_color[2]);						
