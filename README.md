@@ -1,10 +1,6 @@
 # Illumination
 This application implements a raycaster that create a PPM (Portable PixMap) image of mathematical primitives drawn from a JSON (JavaScript Object Notation) file. The data is loaded into pixel buffer where specular and diffuse reflection components are added to the scene of objects to produce lighting and coloring effects.
-
-colors 
-mathematical primitives
  
-
 ## Usage
 ```c
 raycast width height input.json output.ppm
