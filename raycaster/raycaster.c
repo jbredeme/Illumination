@@ -27,7 +27,7 @@
  * @returns
  */
 void specular_highlight(double *normal, double *new_rd, double *reflected_vector, double *rd, double *specular_color, double *light_color, double *color) {
-    double scalar1, scalar2, scalar3;
+    double scalar1 = 0.0, scalar2 = 0.0, scalar3 = 0.0;
 	
 	scalar1 = vector_dot_product(normal, new_rd);
 	scalar2 = vector_dot_product(rd, reflected_vector);
@@ -88,16 +88,25 @@ void diffuse_reflection(double *normal, double *new_rd, double *light_color, dou
  * @param TODO
  * @returns
  */
-double fang(double *direction, double a0, double theta, double *distance) {
-	double scalar;
+double fang(double a0, double theta, double *direction, double *distance) {
+	double scalar = 0.0;
+	double new_distance[3] = {0, 0, 0};
 	
 	// Check light type
 	if((theta == 0.0) && (direction[0] == 0) && (direction[1] == 0) && (direction[2] == 0)) {
 		return (1.0);
 		
 	} else {
-		scalar = vector_dot_product(direction, distance);
-		return (pow(scalar, a0));
+		vector_scale(distance, -1, new_distance);
+		scalar = vector_dot_product(direction, new_distance);
+		
+		if(scalar >= cos((theta * M_PI) / 180)) { // <= Convert degrees into radians; (degrees * pi) / 180
+			return (pow(scalar, a0));
+			
+		} else {
+			return (0);
+			
+		}
 		
 	}
 		
@@ -115,11 +124,13 @@ double fang(double *direction, double a0, double theta, double *distance) {
  * @returns
  */
 double frad(double a0, double a1, double a2, double distance) {
+	double scalar = 0.0;
+	
 	if(distance < INFINITY) {
 		return ((1)/(a0 + (a1 * distance) + (a2 * pow(distance, 2))));
 		
 	} else {
-		// Some default value
+		// Some default value, distance = infinity
 		return (1.0);
 		
 	}
@@ -185,7 +196,7 @@ int get_camera(Object objects[], int num_objects) {
  * @returns double percision float t value that represents length of the intersecting vector, and -1 if no intersection was detected.
  */     
 double sphere_intersection(double *ro, double *rd, double *center, double radius) {
-	double a, b, c, discriminant, t1, t0;
+	double a = 0.0, b = 0.0, c = 0.0, discriminant = 0.0, t1 = 0.0, t0 = 0.0;
 	
 	// Step 1.) Find the equation for the object you are interested in..  
 	// Step 2.) Parameterize the equation with a center point
@@ -240,10 +251,10 @@ double plane_intersection(double *ro, double *rd, double *pos, double *normal) {
 	// p = ro + rd + t
 	// (ro + rd * t - p0) * normal = 0
 	// ((ppos - ro) * normal) / (rd * normal) <- Dot product - a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-	double numerator, denominator, t = 0.0;
+	double numerator = 0.0, denominator = 0.0, t = 0.0;
 	
 	normalize(normal);
-
+	
 	numerator = (normal[0] * (pos[0] - ro[0])) + (normal[1] * (pos[1] - ro[1])) + (normal[2] * (pos[2] - ro[2])); 
 	denominator = (normal[0] * rd[0]) + (normal[1] * rd[1]) + (normal[2] * rd[2]);
 	
@@ -355,7 +366,8 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 				double color_out[3];
 				double reflection_vector[3];
 				int index2, closest_object2;
-				double distance2, best_distance2, distance_to_light;;
+				double distance2 = 0.0, best_distance2 = 0.0, light_distance = 0.0;
+				double fang_out = 0.0, frad_out = 0.0;
 				
  				// Establish orgin for the new ray
 				vector_scale(rd, best_distance, new_ro);
@@ -367,7 +379,9 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 						
 						// Calcuate the new ray direction
 						vector_subtract(objects[index].properties.light.position, new_ro, new_rd);
-						distance_to_light = vector_length(new_rd);
+						light_distance = vector_length(new_rd);
+						//printf("Distance to the light %d is: %lf\n", index, light_distance);
+						//printf("New ray direction values: %lf, %lf, %lf\n", new_rd[0], new_rd[1], new_rd[2]);
 						normalize(new_rd);
 						
 						best_distance2 = INFINITY;
@@ -387,7 +401,7 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 								
 									}
 									
-									if(distance2 <= distance_to_light) {
+									if(distance2 <= light_distance) {
 										// Get the best distance value and object index
 										if ((distance2 > 0) && (distance2 < (best_distance2))) {
 											closest_object2 = index2;
@@ -425,10 +439,12 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 							vector_reflection(new_rd, normal, reflection_vector);
 							diffuse_reflection(normal, new_rd, (objects[index].properties.light.color), diffuse_color, diffuse_out);
 							specular_highlight(normal, new_rd, reflection_vector, rd, specular_color, (objects[index].properties.light.color), specular_out);
+							fang_out = fang((objects[index].properties.light.radial_a0), (objects[index].properties.light.theta), (objects[index].properties.light.direction), new_rd); 
+							frad_out = frad((objects[index].properties.light.radial_a0), (objects[index].properties.light.radial_a1), (objects[index].properties.light.radial_a2), light_distance);
 							
-							color_out[0] = diffuse_out[0] + specular_out[0];
-							color_out[1] = diffuse_out[1] + specular_out[1];
-							color_out[2] = diffuse_out[2] + specular_out[2];
+							color_out[0] = fang_out * frad_out * (diffuse_out[0] + specular_out[0]);
+							color_out[1] = fang_out * frad_out * (diffuse_out[1] + specular_out[1]);
+							color_out[2] = fang_out * frad_out * (diffuse_out[2] + specular_out[2]);
 							
 						}
 						
