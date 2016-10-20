@@ -7,31 +7,31 @@
  */
  
 #ifndef ppm_h
-#define ppm_h
+	#define ppm_h
 
-/**
- * @description three 1 byte unsigned characters used to store RGB color
- * values of a pixel.
- */
-typedef struct Pixel {
-    unsigned char red, green, blue;
+	/**
+	 * Three 1 byte unsigned characters used to store RGB color
+	 * values of a pixel.
+	 */
+	typedef struct Pixel {
+		unsigned char red, green, blue;
 
-} Pixel;
+	} Pixel;
 
-/**
- * @description structure used to represent portable pixmap image data in
- * system memory.
- */
-typedef struct Image {
-    char *magic_number;
-    int width, height;
-    int max_color;
-    Pixel *image_data;
+	/**
+	 * A structure used to represent portable pixmap image data in
+	 * system memory.
+	 */
+	typedef struct Image {
+		char *magic_number;
+		int width, height;
+		int max_color;
+		Pixel *image_data;
 
-} Image;
+	} Image;
 
-// function declarations
-void write_p6_image(char *filename, Image *image);
-void write_p3_image(char *filename, Image *image);
+	// function declarations
+	void write_p6_image(char *filename, Image *image);
+	void write_p3_image(char *filename, Image *image);
  
 #endif

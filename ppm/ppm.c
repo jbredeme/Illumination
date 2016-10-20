@@ -13,13 +13,14 @@
 #include "ppm.h"
 
 /**
+ * This function checks if three integer values against a maximum and minimum values and its primary function 
+ * to check color channels.
+ *
  * @param red - integer value represents the red color channel
  * @param green - integer value represents the green color channel
  * @param blue - integer value represents the blue color channel
  * @param max - integer value that represents the color channels maximum value
  * @returns min - integer value that represents the color channels maximum value
- * @description this function checks if three integer values against a maximum and minimum values
- * and its primary function to check color channels.
  */
 int check_rgb_bits(int red, int green, int blue, int max, int min) {
 	if(((red > max) || (red < min)) || ((green > max) || (green < min)) || ((blue > max) || (blue < min))){
@@ -34,11 +35,11 @@ int check_rgb_bits(int red, int green, int blue, int max, int min) {
 
 
 /**
- * @param filename - string pointer that represents a file name
- * @param image - an image structure
- * @returns void
- * @description takes in two pointers as parameters, a filename of a ppm image and image structure
+ * Takes in two pointers as parameters, a filename of a ppm image and image structure
  * use to store data read in from the ppm image file.
+ *
+ * @param filename - string pointer that represents a file name
+ * @param image - an image structure 
  */
 void read_image(char *filename, Image *image) {
 	
@@ -170,11 +171,12 @@ void read_image(char *filename, Image *image) {
 
 
 /**
+ * This function writes ASCII data into ppm p6 format. Accepts two parameters, a pointer to a file stream 
+ * and a poiner to an image structure. Writes to the file stream using fwrite.
+ *
  * @param filename - string pointer that represents a file name
  * @param image - an image structure
  * @returns void
- * @description this function writes ASCII data into ppm p6 format. Accepts two parameters, a pointer to a
- * file stream and a poiner to an image structure. Writes to the file stream using fwrite.
  */
 void write_p6_image(char *filename, Image *image) {
 	FILE *fpointer;
@@ -205,13 +207,14 @@ void write_p6_image(char *filename, Image *image) {
 
 
 /**
+ * This function writes raw data into ppm p3 ASCII format. Accepts two parameters, a pointer to a file
+ * stream and a poiner to an image structure. This function uses fprintf to write to the file stream
+ * using a nested loop, converting integers to strings using sprintf then wites the string to an output.
+ *
  * @param filename - string pointer that represents a file name
  * @param image - an image structure
  * @returns void
- * @description this function writes raw data into ppm p3 ASCII format. Accepts two parameters, a pointer to a
- * file stream and a poiner to an image structure. This function uses fprintf to write to the file stream
- * using a nested loop, converting integers to strings using sprintf then wites the string to an 
- * output.
+ * @description 
  */
 void write_p3_image(char *filename, Image *image) {
 	int row, column;
