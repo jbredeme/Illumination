@@ -20,7 +20,7 @@ int line_num;
  * or linefeed and adds 1 to the line number counter (line_num). If an end-of-file is encountered, 
  * prompt the user exit program.
  *
- * @param file pointer
+ * @param fpointer - file pointer
  * @returns interger value of the ascii character read in
  */
 int get_char(FILE *fpointer) {
@@ -46,8 +46,7 @@ int get_char(FILE *fpointer) {
  * Reads in a character from an input stream, checks if the character is a newline, carriage return, 
  * or linefeed and advances the file position indicator.
  *
- * @param file pointer
- * @returns void
+ * @param fpointer - file pointer
  */
 void skip_whitespace(FILE *fpointer) {
 	int token = get_char(fpointer);
@@ -66,7 +65,7 @@ void skip_whitespace(FILE *fpointer) {
  * Reads in a stream of characters delimited by quotation marks. Validates against the existence of escape 
  * sequence codes, strings longer then 256 characters, and non-ascii characters. 
  *
- * @param file pointer
+ * @param fpointer - file pointer
  * @returns string of characters delimited by "..."
  */
 char *get_string(FILE *fpointer){
@@ -130,8 +129,8 @@ char *get_string(FILE *fpointer){
 /**
  * Reads in a double precsion floating point number, if none are found throws error exits the program.
  * 
- * @param file pointer
- * @returns double
+ * @param fpointer - file pointer
+ * @returns double precsion floating point number
  */
 double get_double(FILE *fpointer){
 	 double dbl;
@@ -153,13 +152,12 @@ double get_double(FILE *fpointer){
 /**
  * Reads in an array with the format pattern [x, y, z] and parses into an array of doubles.
  *
- * @param file pointer
- * @returns double array
+ * @param fpointer - file pointer
+ * @returns an array of double precsion floating point numbers 
  */
 double *get_vector(FILE *fpointer){
 	// Allocate memory for vector array of doubles
 	double *vector = malloc(3 * sizeof(double));
-
 	int token;
 	
 	token = get_char(fpointer);
@@ -172,11 +170,8 @@ double *get_vector(FILE *fpointer){
 		
 	}	
 	skip_whitespace(fpointer);
-	
 	vector[0] = get_double(fpointer);
-	
 	skip_whitespace(fpointer);
-	
 	token = get_char(fpointer);
 	
 	if(token != ',') {
@@ -187,11 +182,8 @@ double *get_vector(FILE *fpointer){
 		
 	}
 	skip_whitespace(fpointer);
-	
 	vector[1] = get_double(fpointer);
-	
 	skip_whitespace(fpointer);
-	
 	token = get_char(fpointer);
 	
 	if(token != ',') {
@@ -202,11 +194,8 @@ double *get_vector(FILE *fpointer){
 		
 	}
 	skip_whitespace(fpointer);
-	
 	vector[2] = get_double(fpointer);
-	
 	skip_whitespace(fpointer);
-
 	token = get_char(fpointer);
 	
 	if(token != ']') {
@@ -225,7 +214,7 @@ double *get_vector(FILE *fpointer){
 /**
  * Check if color value is within the acceptable tolerances 0 to 1.0.
  *
- * @param color_v - an array of 3 double precsion numbers 
+ * @param color_v - an array of three double precsion numbers 
  * @returns 0 if an element is not within the acceptable tolerances 0 to 1.0 and 1 otherwise
  */
  int color_tolerance(double color_v[]){
@@ -252,8 +241,8 @@ double *get_vector(FILE *fpointer){
  * - Accepts comma and non-comma separated name:value pairs
  * - Whitespace insensitive
  *
- * @param file pointer
- * @param array of Object
+ * @param fpointer - file pointer
+ * @param objects - an array of Object types
  * @returns integer number of item read-in
  */ 
 int json_read_scene(FILE *fpointer, Object objects[]) {
@@ -717,6 +706,6 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 	} // End-of-While-Loop: Object defintions
 
 	// Return the total number of objects read-in from the scene
-	return index;
+	return (index);
 
 }

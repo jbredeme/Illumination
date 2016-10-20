@@ -52,7 +52,11 @@ typedef struct Sphere {
 
 
 /**
- * TODO
+ * Stores three arrays one of which represent a Light's position in Euclidean space (x, y, z).
+ * The color array represents the 3 byte color channel of RGB, and the direction array represents
+ * a direction vector of spotlights. Additionally there is a theta value used to store angle 
+ * information in radians from the direction vector, and radial and angular values used in 
+ * calculating radial and angular attunation.
  */
 typedef struct Light {
 	double color[3];
