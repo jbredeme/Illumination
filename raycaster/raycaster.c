@@ -17,21 +17,22 @@
 #include "raycaster.h"
 
 /**
- * TODO
+ * Calculates specular highlighting by taking a light ray that hits the surface of an object 
+ * adding a specular highlight and light color to a reflected view vector.
  * 
- * @param normal - 
- * @param new_rd - 
- * @param reflected_vector - 
- * @param rd - 
- * @param specular_color -
- * @param light_color- 
- * @param color -
+ * @param normal - normal vector of the object
+ * @param incident_ray - the light ray
+ * @param reflected_ray - reflected ray off the surface
+ * @param rd - ray direction, or view vector
+ * @param specular_color - color emitted by the light
+ * @param light_color - color of the light 
+ * @param color - vector that stores computational values that is used 
  */
-void specular_highlight(double *normal, double *new_rd, double *reflected_vector, double *rd, double *specular_color, double *light_color, double *color) {
+void specular_highlight(double *normal, double *incident_ray, double *reflected_ray, double *rd, double *specular_color, double *light_color, double *color) {
     double scalar1 = 0.0, scalar2 = 0.0, scalar3 = 0.0;
 	
-	scalar1 = vector_dot_product(normal, new_rd);
-	scalar2 = vector_dot_product(rd, reflected_vector);
+	scalar1 = vector_dot_product(normal, incident_ray);
+	scalar2 = vector_dot_product(rd, reflected_ray);
 	
     if ((scalar1 > 0) && (scalar2 > 0)) {
         scalar3 = pow(scalar2, 25);
@@ -50,18 +51,19 @@ void specular_highlight(double *normal, double *new_rd, double *reflected_vector
 
 
 /**
- * TODO
+ * Calculates diffuse reflection by taking a light ray that hits the surface of an object 
+ * adds in a diffuse color with the light's color.
  * 
- * @param normal -
- * @param new_rd - 
- * @param light_color -
- * @param diffuse_color - 
- * @param color -
+ * @param normal - normal vector of the object
+ * @param incident_ray - the light ray
+ * @param light_color - color of the light 
+ * @param diffuse_color - color emitted by the light
+ * @param color - vector that stores computational values that is used 
  */
-void diffuse_reflection(double *normal, double *new_rd, double *light_color, double *diffuse_color, double *color) {
+void diffuse_reflection(double *normal, double *incident_ray, double *light_color, double *diffuse_color, double *color) {
 	double scalar = 0.0;
 
-	scalar = vector_dot_product(normal, new_rd);
+	scalar = vector_dot_product(normal, incident_ray);
 	
 	if(scalar > 0) {
 		color[0] = scalar * diffuse_color[0] * light_color[0];
@@ -79,21 +81,21 @@ void diffuse_reflection(double *normal, double *new_rd, double *light_color, dou
 
 
 /**
- * TODO
+ * Calculates the angular attenuation value used for spotlights.
  * 
- * @param a0 - 
- * @param theta - 
- * @param direction - 
- * @param distance - 
- * @returns
+ * @param a0 - scalar value
+ * @param theta - angle from the direction vector expressed in degrees
+ * @param direction - direction of a spotlight
+ * @param distance - fall off distance
+ * @returns angular attenuation scalar value
  */
 double fang(double a0, double theta, double *direction, double *distance) {
 	double scalar = 0.0;
 	double new_distance[3] = {0, 0, 0};
 	
-	// Check light type
+	// Check the type of light
 	if((theta == 0.0) && (direction[0] == 0) && (direction[1] == 0) && (direction[2] == 0)) {
-		return (1.0);
+		return (1.0);	// <= point light
 		
 	} else {
 		vector_scale(distance, -1, new_distance);
@@ -113,13 +115,13 @@ double fang(double a0, double theta, double *direction, double *distance) {
 
 
 /**
- * TODO
+ * Calculates radial attenuation value used for spotlights.
  * 
- * @param a0 - 
- * @param a1 - 
- * @param a2 - 
- * @param distance - 
- * @returns
+ * @param a0 - scalar value
+ * @param a1 - scalar value
+ * @param a2 - scalar value
+ * @param distance - fall off distance of the light
+ * @returns radial attenuation scalar value
  */
 double frad(double a0, double a1, double a2, double distance) {
 	double scalar = 0.0;
@@ -177,13 +179,13 @@ int get_camera(Object objects[], int num_objects) {
 		
 	}
 	
-	return(-1);
+	return(-1); //<= no camera found
 	
 }
 
 
 /**
- * This function detects the distance a ray vector intersects the sphere.
+ * This function calculates the distance a ray vector intersects the sphere.
  *
  * @param ro - ray vector orgin
  * @param rd - ray vector direction
@@ -211,7 +213,7 @@ double sphere_intersection(double *ro, double *rd, double *center, double radius
 		
 	}
 
-	// Quadratic formula
+	// Quadratic Equation
 	t1 = (-1 * b + sqrt(pow(b, 2) - 4 * a * c)) / (2 * a);
 	t0 = (-1 * b - sqrt(pow(b, 2) - 4 * a * c)) / (2 * a);
 	
@@ -230,7 +232,7 @@ double sphere_intersection(double *ro, double *rd, double *center, double radius
 
 
 /**
- * This function detects the distance a ray vector intersects the plane.
+ * This function calculates the distance a ray vector intersects the plane.
  *
  * @param ro - ray vector orgin
  * @param rd - ray vector direction
@@ -277,21 +279,29 @@ double plane_intersection(double *ro, double *rd, double *pos, double *normal) {
  * @returns Image - which is the image pointer to the image object that is used to store the image data for write purposes.
  */
 Image* raycaster(Object objects[], Image *image, int num_objects) {
-	double pixel_height, pixel_width;
-	double h, w;
-	double red, green, blue, distance, best_distance;
-	int row, column, index, closest_object;
-	
-	// Coloring vector
-	double pixel_coloring[3];
-	
-	// Set ray orgin
-	double ro[3] = {0, 0, 0};
-	double rd[3] = {0, 0, 0};
+	double pixel_height, pixel_width;	//<= image height and width in pixels
+	double h, w;						//<= height and width of the camera
+	double cx, cy; 						//<= center of pixel
+	double new_ro[3]; 					//<= view vector orgin
+	double new_rd[3]; 					//<= view vector direction
+	double normal[3]; 					//<= normal vector
+	double reflection_vector[3];		//<= reflection vector
+	double distance, best_distance;		//<= Raycaster intersection distance result(s)
+	double distance2, best_distance2; 	//<= Shadow intersection distance result(s)
+	double light_distance;				//<= distance to the light
+	double diffuse_color[3];			//<= object's diffuse color
+	double specular_color[3];			//<= object's specular color
+	double diffuse_out[3];				//<= diffuse scalar
+	double specular_out[3];				//<= specular scalar
+	double ro[3], rd[3];				//<= view vector orgin and direction
+	double fang_out, frad_out;			//<= angular and radial attenuation output
+	double red, green, blue;			//<= 8-bit RBG storage
+	double pixel_coloring[3]; 	 		//<= final coloring vector
+	int row, column, index, index2; 	//<= iteration counters
+	int closest_object;					//<= array index of closest object
 	
 	// Set center x & y
-	double cx = 0;
-	double cy = 0;
+	cx = cy = 0;
 	
 	// Get the index of the camera
 	index = get_camera(objects, num_objects);
@@ -312,9 +322,15 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 		
 	}
 
+	// Set default values for view orgin and view vector
+	ro[0] = ro[1] = ro[2] = 0.0;
+	rd[0] = rd[1] = rd[2] = 0.0;
+	
 	// Iterate over pixel matrix
 	for(row = 0; row < (image->height); row++) {
 		for(column = 0; column < (image->width); column++) {
+			
+			// Set view vector direction
 			rd[0] = (cx - (w / 2.0) + pixel_width * (column + 0.5));
 			rd[1] = - 1 * (cy - (h / 2.0) + pixel_height * (row + 0.5));
 			rd[2] = 1.0;
@@ -322,7 +338,7 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 			normalize(rd); // <= Normalize ray direction
 			best_distance = INFINITY;
 			
-			// Ambient color
+			// Set ambient color
 			pixel_coloring[0] = 0;
 			pixel_coloring[1] = 0;
 			pixel_coloring[2] = 0;
@@ -352,17 +368,9 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 			
 			// Object intersection detected
 			if((best_distance > 0) && (best_distance != INFINITY)) {
- 			    double new_ro[3] = {0, 0, 0};
-				double new_rd[3] = {0, 0, 0};
-				double normal[3] = {0, 0, 0};
-				double diffuse_color[3] = {0, 0, 0};
-				double specular_color[3] = {0, 0, 0};
-
-				double reflection_vector[3] = {0, 0, 0};
-				int index2;
-				double distance2 = 0.0, best_distance2 = 0.0, light_distance = 0.0;
-
-				
+				// Set default values for incident ray
+				new_ro[0] = new_ro[1] = new_ro[2] = 0.0;
+				new_rd[0] = new_rd[1] = new_rd[2] = 0.0;
 				
  				// Establish orgin for the new ray
 				vector_scale(rd, best_distance, new_ro);
@@ -372,16 +380,20 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 				for(index = 0; index < num_objects; index++) {
 					if(strcmp(objects[index].type, "light") == 0) {
 						
+						// Set default light distance
+						light_distance = 0.0;
+						
 						// Calcuate new ray direction
 						vector_subtract(objects[index].properties.light.position, new_ro, new_rd);
 						light_distance = vector_length(new_rd);
 						normalize(new_rd);	//<= Normalize new ray direction
 						
+						// Set default value
 						best_distance2 = INFINITY;
 						
-						// Execute intersection test
+						// Execute shadow intersection test
 						for(index2 = 0; index2 < num_objects; index2++) {
-							distance2 = 0;	// <= reset distance each iteration
+							distance2 = 0.0;	// <= reset distance each iteration
 							
 							if(closest_object != index2) {				// <= prevent self intersecting
 								if((objects[index2].type) != NULL) { 	// <= Check against type nulls
@@ -405,9 +417,16 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 								
 							}
 							
-						} // EoObject iteration loop						
+						} // End-of-Object Iteration Loop						
 						
-						//
+						// Set default values for diffuse and specular colors
+						diffuse_color[0] = diffuse_color[1] = diffuse_color[2] = 0.0;
+						specular_color[0] = specular_color[1] = specular_color[2] = 0.0;
+						
+						// Set default value for the normal vector
+						normal[0] = normal[1] = normal[2] = 0.0;
+				
+						// No intersection detected
 						if(best_distance2 == INFINITY) {
 							if((objects[closest_object].type) != NULL) {
 								if(strcmp((objects[closest_object].type), "sphere") == 0) {
@@ -423,24 +442,30 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 
 								}
 								
-							} 
-
+							}
+					
+							// Set default value for reflection vector		
+							reflection_vector[0] = reflection_vector[1] = reflection_vector[2] = 0.0;
+							
 							normalize(normal); //<= Normalize normal
 							normalize(new_rd); //<= Normalize new ray direction
 							vector_reflection(new_rd, normal, reflection_vector);
 							
-							double diffuse_out[3] = {0, 0, 0};
-							double specular_out[3] = {0, 0, 0};							
+							// Set default values for diffuse and specular output vectors
+							diffuse_out[0] = diffuse_out[1] = diffuse_out[2] = 0.0;
+							specular_out[0] = specular_out[1] = specular_out[2] = 0.0;
 							
 							diffuse_reflection(normal, new_rd, (objects[index].properties.light.color), diffuse_color, diffuse_out);
 							specular_highlight(normal, new_rd, reflection_vector, rd, specular_color, (objects[index].properties.light.color), specular_out);
 							
-							double fang_out = 0.0, 
-							double frad_out = 0.0;
+							// Set angular and radial default values
+							fang_out = frad_out = 0.0;
 							
+							// Get angular and radial attenuation values
 							fang_out = fang((objects[index].properties.light.radial_a0), (objects[index].properties.light.theta), (objects[index].properties.light.direction), new_rd); 
 							frad_out = frad((objects[index].properties.light.radial_a0), (objects[index].properties.light.radial_a1), (objects[index].properties.light.radial_a2), light_distance);
 							
+							// Add angular attenuation, radial attenuation, diffuse color and specular color to pixels
 							pixel_coloring[0] = fang_out * frad_out * (diffuse_out[0] + specular_out[0]);
 							pixel_coloring[1] = fang_out * frad_out * (diffuse_out[1] + specular_out[1]);
 							pixel_coloring[2] = fang_out * frad_out * (diffuse_out[2] + specular_out[2]);
@@ -450,6 +475,9 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 					}
 			
 				}
+				
+				// Set 8-bit RGB default values
+				red = green = blue = 0.0;
 				
 				// Apply coloring to a pixel
 				if(strcmp(objects[(closest_object)].type, "sphere") == 0) {
@@ -474,9 +502,9 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 				
 			}
 			
-		} // EoRow Loop
+		} // End-of-Row Loop
 		
-	} // EoColumn Loop 
+	} // End-of-Column Loop 
 
 	return image;
 	
