@@ -77,6 +77,11 @@ int main(int argc, char *argv[]){
 		
 		// Allocate memory size for image data
 		ppm_image->image_data = malloc(sizeof(Pixel) * ppm_image->width * ppm_image->height);
+		if((ppm_image->image_data) == NULL) {
+			fprintf(stderr, "Failed to allocate memory.\n");
+			exit(-1);
+
+		}
 		
 		// Read in json scene return number of objects
 		num_objects = json_read_scene(fpointer, objects);
@@ -92,8 +97,7 @@ int main(int argc, char *argv[]){
 				
 				// Account for empty object data
 				if((objects[count].type) == NULL){
-					printf("Type: Empty Object\n");
-					printf("No properties discovered\n\n");
+					printf("Type: Empty Object\nNo properties discovered\n\n");
 					
 				} else {
 					if(strcmp(objects[count].type, "camera") == 0){
@@ -140,6 +144,10 @@ int main(int argc, char *argv[]){
 			}
 			// Raycast scene, write out to ppm6 image
 			write_p6_image(argv[4], raycaster(objects, ppm_image, num_objects));
+			
+			// Free memory resources
+			free(ppm_image->image_data);
+			free(ppm_image);
 			
 		}
 		
