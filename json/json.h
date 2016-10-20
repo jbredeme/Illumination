@@ -92,6 +92,7 @@ typedef struct Object {
 } Object;
 
 // function declarations
+void print_scene(Object *objects, int num_objects);
 int json_read_scene(FILE *fpointer, Object objects[]);
  
 #endif
