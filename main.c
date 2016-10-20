@@ -11,8 +11,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
-#include "json\json.h"
 #include "ppm\ppm.h"
+#include "json\json.h"
 #include "raycaster\raycaster.h"
 
 // Allocate object array, specifications do not support more then 128 objects in a scene
