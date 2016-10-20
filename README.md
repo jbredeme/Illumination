@@ -5,6 +5,8 @@ This application implements a raycaster that create a PPM (Portable PixMap) imag
 ```c
 raycast width height input.json output.ppm
 ```
+## Example Screenshots
+<img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example01.png" width="256"> <img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example02.png" width="256"> <img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example03.png" width="256">
 
 ## Example json scene data
 ```javascript
@@ -38,8 +40,6 @@ raycast width height input.json output.ppm
 	}
 ]
 ```
-## Example Screenshots
-<img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example01.png" width="256"> <img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example02.png" width="256"> <img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example03.png" width="256">
 
 ## Resources
 * Pace University [Computer Graphics]
