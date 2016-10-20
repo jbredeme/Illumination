@@ -39,7 +39,7 @@ raycast width height input.json output.ppm
 ]
 ```
 ## Example Screenshots
-* TODO
+<img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example01.png" width="256"> <img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example02.png" width="256"> <img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example03.png" width="256">
 
 ## Resources
 * Pace University [Computer Graphics]
