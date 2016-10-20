@@ -19,12 +19,13 @@
 /**
  * TODO
  * 
- * @param TODO
- * @param TODO
- * @param TODO
- * @param TODO
- * @param TODO
- * @returns
+ * @param normal - 
+ * @param new_rd - 
+ * @param reflected_vector - 
+ * @param rd - 
+ * @param specular_color -
+ * @param light_color- 
+ * @param color -
  */
 void specular_highlight(double *normal, double *new_rd, double *reflected_vector, double *rd, double *specular_color, double *light_color, double *color) {
     double scalar1 = 0.0, scalar2 = 0.0, scalar3 = 0.0;
@@ -32,7 +33,7 @@ void specular_highlight(double *normal, double *new_rd, double *reflected_vector
 	scalar1 = vector_dot_product(normal, new_rd);
 	scalar2 = vector_dot_product(rd, reflected_vector);
 	
-    if (scalar1 > 0 && scalar2 > 0) {
+    if ((scalar1 > 0) && (scalar2 > 0)) {
         scalar3 = pow(scalar2, 25);
         color[0] = scalar3 * specular_color[0] * light_color[0];
         color[1] = scalar3 * specular_color[1] * light_color[1];
@@ -51,12 +52,11 @@ void specular_highlight(double *normal, double *new_rd, double *reflected_vector
 /**
  * TODO
  * 
- * @param TODO
- * @param TODO
- * @param TODO
- * @param TODO
- * @param TODO
- * @returns
+ * @param normal -
+ * @param new_rd - 
+ * @param light_color -
+ * @param diffuse_color - 
+ * @param color -
  */
 void diffuse_reflection(double *normal, double *new_rd, double *light_color, double *diffuse_color, double *color) {
 	double scalar = 0.0;
@@ -81,11 +81,10 @@ void diffuse_reflection(double *normal, double *new_rd, double *light_color, dou
 /**
  * TODO
  * 
- * @param TODO
- * @param TODO
- * @param TODO
- * @param TODO
- * @param TODO
+ * @param a0 - 
+ * @param theta - 
+ * @param direction - 
+ * @param distance - 
  * @returns
  */
 double fang(double a0, double theta, double *direction, double *distance) {
@@ -116,11 +115,10 @@ double fang(double a0, double theta, double *direction, double *distance) {
 /**
  * TODO
  * 
- * @param TODO
- * @param TODO
- * @param TODO
- * @param TODO
- * @param TODO
+ * @param a0 - 
+ * @param a1 - 
+ * @param a2 - 
+ * @param distance - 
  * @returns
  */
 double frad(double a0, double a1, double a2, double distance) {
@@ -139,14 +137,12 @@ double frad(double a0, double a1, double a2, double distance) {
 
 
 /**
- * TODO
+ * Clamp takes a number and enforces a lower and upper limit by
  * 
- * @param TODO
- * @param TODO
- * @param TODO
- * @param TODO
- * @param TODO
- * @returns
+ * @param number - the number to be clamped
+ * @param min - number that is the lower limit
+ * @param max - number that is the upper limit
+ * @returns min if value is below lower limit, max if number is above upper limit, number otherwise
  */
 double clamp(double number, double min, double max) {
 	if(number > max) {
@@ -208,7 +204,6 @@ double sphere_intersection(double *ro, double *rd, double *center, double radius
 	b = (2 * (rd[0] * (ro[0] - center[0]) + rd[1] * (ro[1] - center[1]) + rd[2] * (ro[2] - center[2])));
 	c = pow((ro[0] - center[0]), 2) + pow((ro[1] - center[1]), 2) + pow((ro[2] - center[2]), 2) - pow(radius, 2);
 	
-
 	discriminant = pow(b, 2) - 4 * a * c;
 	
 	if(discriminant < 0) {
@@ -362,12 +357,11 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 				double normal[3] = {0, 0, 0};
 				double diffuse_color[3] = {0, 0, 0};
 				double specular_color[3] = {0, 0, 0};
-				double diffuse_out[3] = {0, 0, 0};
-				double specular_out[3] = {0, 0, 0};
+
 				double reflection_vector[3] = {0, 0, 0};
 				int index2;
 				double distance2 = 0.0, best_distance2 = 0.0, light_distance = 0.0;
-				double fang_out = 0.0, frad_out = 0.0;
+
 				
 				
  				// Establish orgin for the new ray
@@ -387,9 +381,9 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 						
 						// Execute intersection test
 						for(index2 = 0; index2 < num_objects; index2++) {
-							distance2 = 0;			// <= reset distance each iteration
+							distance2 = 0;	// <= reset distance each iteration
 							
-							if(closest_object != index2) {	// <= prevent self intersecting
+							if(closest_object != index2) {				// <= prevent self intersecting
 								if((objects[index2].type) != NULL) { 	// <= Check against type nulls
 									if(strcmp((objects[index2].type), "sphere") == 0) {
 										distance2 = sphere_intersection(new_ro, new_rd, objects[index2].properties.sphere.position, objects[index2].properties.sphere.radius);
@@ -413,6 +407,7 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 							
 						} // EoObject iteration loop						
 						
+						//
 						if(best_distance2 == INFINITY) {
 							if((objects[closest_object].type) != NULL) {
 								if(strcmp((objects[closest_object].type), "sphere") == 0) {
@@ -428,13 +423,21 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 
 								}
 								
-							}
-							
-							normalize(normal);
-							normalize(new_rd);
+							} 
+
+							normalize(normal); //<= Normalize normal
+							normalize(new_rd); //<= Normalize new ray direction
 							vector_reflection(new_rd, normal, reflection_vector);
+							
+							double diffuse_out[3] = {0, 0, 0};
+							double specular_out[3] = {0, 0, 0};							
+							
 							diffuse_reflection(normal, new_rd, (objects[index].properties.light.color), diffuse_color, diffuse_out);
 							specular_highlight(normal, new_rd, reflection_vector, rd, specular_color, (objects[index].properties.light.color), specular_out);
+							
+							double fang_out = 0.0, 
+							double frad_out = 0.0;
+							
 							fang_out = fang((objects[index].properties.light.radial_a0), (objects[index].properties.light.theta), (objects[index].properties.light.direction), new_rd); 
 							frad_out = frad((objects[index].properties.light.radial_a0), (objects[index].properties.light.radial_a1), (objects[index].properties.light.radial_a2), light_distance);
 							
@@ -447,25 +450,24 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 					}
 			
 				}
-
+				
+				// Apply coloring to a pixel
 				if(strcmp(objects[(closest_object)].type, "sphere") == 0) {
 					red = clamp(pixel_coloring[0], 0, 1) * (image->max_color);
-					image->image_data[(image->width) * row + column].red = red;
-					
 					green = clamp(pixel_coloring[1], 0, 1) * (image->max_color);
-					image->image_data[(image->width) * row + column].green = green;
-					
 					blue = clamp(pixel_coloring[2], 0, 1) * (image->max_color);
+					
+					image->image_data[(image->width) * row + column].red = red;
+					image->image_data[(image->width) * row + column].green = green;
 					image->image_data[(image->width) * row + column].blue = blue;
 
 				} else if(strcmp(objects[(closest_object)].type, "plane") == 0) {
 					red = clamp(pixel_coloring[0], 0, 1) * (image->max_color);
-					image->image_data[(image->width) * row + column].red = red;
-					
 					green = clamp(pixel_coloring[1], 0, 1) * (image->max_color);
-					image->image_data[(image->width) * row + column].green = green;
-					
 					blue = clamp(pixel_coloring[2], 0, 1) * (image->max_color);
+					
+					image->image_data[(image->width) * row + column].red = red;
+					image->image_data[(image->width) * row + column].green = green;
 					image->image_data[(image->width) * row + column].blue = blue;
 					
 				}
