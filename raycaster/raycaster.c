@@ -396,7 +396,7 @@ Image* raycaster(Object objects[], Image *image, int num_objects) {
 							distance2 = 0.0;	// <= reset distance each iteration
 							
 							if(closest_object != index2) {				// <= prevent self intersecting
-								if((objects[index2].type) != NULL) { 	// <= Check against type nulls
+								if((objects[index2].type) != NULL) { 	// <= check against type nulls
 									if(strcmp((objects[index2].type), "sphere") == 0) {
 										distance2 = sphere_intersection(new_ro, new_rd, objects[index2].properties.sphere.position, objects[index2].properties.sphere.radius);
 									
