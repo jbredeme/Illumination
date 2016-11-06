@@ -734,7 +734,7 @@ int json_read_scene(FILE *fpointer, Object objects[]) {
 				}	 
 			   
 			} else {
-				fprintf(stderr, "Error, line number %d; invalid type '%s'.\n", name);
+				fprintf(stderr, "Error, line number %d; invalid type '%s'.\n", line_num, name);
 				// Close file stream flush all buffers
 				fclose(fpointer);		
 				exit(-1);				
