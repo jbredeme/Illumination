@@ -1,5 +1,5 @@
 # Illumination
-This application implements a raycaster that create a PPM (Portable PixMap) image of mathematical primitives drawn from a JSON (JavaScript Object Notation) file. The data is loaded into pixel buffer where specular and diffuse reflection components are added to the scene of objects to produce lighting and coloring effects.
+This is a graphics application that implements a raycaster which creates a PPM (Portable PixMap) image of mathematical primitives drawn from a JSON (JavaScript Object Notation) file. The data is loaded into pixel buffer where specular and diffuse reflection components are added to the scene of objects to produce lighting and coloring effects.
  
 ## Screenshots
 <img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example01.png" width="256"> <img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example02.png" width="256"> <img src="https://github.com/jbredeme/Illumination/blob/master/example/png/example03.png" width="256">
@@ -50,9 +50,9 @@ raycast width height input.json output.ppm
 * **Jarid Bredemeier** - *Initial work*
 
 ## Resources
-* Pace University [Computer Graphics]
-* Wikipedia [Diffuse reflection]
-* Khan Academy [Specular and diffuse reflection]
+* [Computer Graphics] - Pace University 
+* [Diffuse reflection] - Wikipedia
+* [Specular and diffuse reflection] - Khan Academy
 
 [Computer Graphics]: http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter0.htm
 [Diffuse reflection]: https://en.wikipedia.org/wiki/Diffuse_reflection
