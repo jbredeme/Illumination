@@ -42,7 +42,7 @@ raycast width height input.json output.ppm
 ]
 ```
 ## Built With
-* [Cygwin](https://cygwin.com/index.html) - 64-bit versions for Windows
+* [Cygwin](https://cygwin.com/index.html) - 64-bit version for Windows
 * GNU Compiler Collection (GCC) release 5.4.0
 * GNU Make release 4.2.1
 * Windows 10 Professional
